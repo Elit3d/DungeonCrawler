@@ -29,7 +29,7 @@ AChestGeneration::AChestGeneration()
 	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	Collider->OnComponentBeginOverlap.AddDynamic(this, &AChestGeneration::OnOverlapBegin);
 	Collider->OnComponentEndOverlap.AddDynamic(this, &AChestGeneration::OnOverlapEnd);
-	Collider->SetupAttachment(RootComponent);
+	Collider->SetupAttachment(RootComponent); 
 
 	ItemManager = CreateDefaultSubobject<UItemManagerComponent>(TEXT("ItemManager"));
 }
