@@ -20,11 +20,25 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	int RandomDirection();
+	void CreateGrid();
+	void RandomPointOnGrid();
+	int32 DirectionToTravel();
 	
+	UPROPERTY(EditAnywhere, Category = "Level Properties")
+		int32 GridWidth;
+	UPROPERTY(EditAnywhere, Category = "Level Properties")
+		int32 GridHeight;
 	UPROPERTY(EditAnywhere, Category = "Room Component")
 		class UCreateRoomComponent *RoomComponent;
-private:
-	FVector2D MapWidth;
 
+	// 2d grid stored as 1d array
+	TArray< TWeakObjectPtr<AActor> > LevelGrid;
+private:
+	// Starting Grid Point
+	int32 StartX;
+	int32 StartY;
+
+	// Target Point
+	int32 EndX;
+	int32 EndY;
 };
