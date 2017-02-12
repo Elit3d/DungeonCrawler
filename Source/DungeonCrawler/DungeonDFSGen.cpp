@@ -9,7 +9,7 @@
 // Sets default values
 ADungeonDFSGen::ADungeonDFSGen()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	RoomComponent = CreateDefaultSubobject<UCreateRoomComponent>(TEXT("RoomComponent"));
@@ -29,11 +29,24 @@ void ADungeonDFSGen::BeginPlay()
 }
 
 // Called every frame
-void ADungeonDFSGen::Tick( float DeltaTime )
+void ADungeonDFSGen::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
+	Super::Tick(DeltaTime);
 
-	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(LevelGrid.Num()) + " - " + FString::FromInt(StartX) + " " + FString::FromInt(StartY));
+	//	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(LevelGrid.Num()) + " - " + FString::FromInt(StartX) + " " + FString::FromInt(StartY) + " = " + FString::FromInt(StartX+1) + " " + FString::FromInt(StartY+1));
+	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(CellX) + " - " + FString::FromInt(CellY));
+	//DirectionToTravel();
+
+	timer += DeltaTime;
+	if (timer >= maxTimer)
+	{
+		//if (CurrentStep <= NumberOfRooms)
+		{
+			CurrentStep++;
+			timer = 0.0f;
+			DFSAlgorithm();
+		}
+	}
 }
 
 void ADungeonDFSGen::CreateGrid()
@@ -43,18 +56,54 @@ void ADungeonDFSGen::CreateGrid()
 
 void ADungeonDFSGen::RandomPointOnGrid()
 {
-	StartX = FMath::RandHelper(GridWidth);
-	StartY = FMath::RandHelper(GridHeight);
-
-	//End pos might be setup on runtime -- Last bit on grid placed will be last room
-	EndX = FMath::RandHelper(GridWidth);
-	EndY = FMath::RandHelper(GridHeight);
+	CellX = FMath::RandHelper(GridWidth);
+	CellY = FMath::RandHelper(GridHeight);
 }
 
 int32 ADungeonDFSGen::DirectionToTravel()
 {
 	// Gives a random direction to travel in N E S W -- 0-3
 	return FMath::RandHelper(4);
+}
+
+AActor * ADungeonDFSGen::GetGridActor(int32 x, int32 y)
+{
+	if (LevelGrid.IsValidIndex(GridWidth * y + x) == true)
+		return Cast<AActor>(LevelGrid[GridWidth * y + x].Get());
+	return NULL;
+}
+
+void ADungeonDFSGen::DFSAlgorithm()
+{
+	//if (CellX > 0 && CellY > 0)
+	{
+		int32 dir = FMath::RandHelper(4);
+
+		switch (dir)
+		{
+		case 0: // North
+			CellY--;
+			break;
+		case 1: // East
+			CellX++;
+			break;
+		case 2: // South
+			CellY++;
+			break;
+		case 3: // West
+			CellX--;
+			break;
+		}
+
+		int RoomSize = 5;
+		int GridSpacing = 100;
+		FVector loc = GetTransform().GetLocation();
+		loc.X += (float)CellX * (RoomSize * GridSpacing);
+		loc.Y += (float)CellY * (RoomSize * GridSpacing);
+		loc.Z += 350;
+		AActor * pActor = GetWorld()->SpawnActor(ActorArray[0], &loc, NULL);
+		//LevelGrid[GridWidth * CellY + CellX] = pActor; //giving an index out of bounds
+	}
 }
 
 

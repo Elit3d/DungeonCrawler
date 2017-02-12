@@ -22,9 +22,9 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
-		int Width = 32;
+		int Width = 5;
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
-		int Height = 32;
+		int Height = 5;
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
 		int X = 0;
 	UPROPERTY(EditAnywhere, Category = "Room Properties")

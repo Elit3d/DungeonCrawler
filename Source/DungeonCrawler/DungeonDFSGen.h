@@ -23,6 +23,11 @@ public:
 	void CreateGrid();
 	void RandomPointOnGrid();
 	int32 DirectionToTravel();
+	AActor *GetGridActor(int32 x, int32 y); // Return Null if nothing in cell grid
+
+	void CheckNeighbourGrid();
+
+	void DFSAlgorithm();
 	
 	UPROPERTY(EditAnywhere, Category = "Level Properties")
 		int32 GridWidth;
@@ -33,12 +38,17 @@ public:
 
 	// 2d grid stored as 1d array
 	TArray< TWeakObjectPtr<AActor> > LevelGrid;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Actors)
+		TArray< TSubclassOf<class AActor> > ActorArray;
 private:
 	// Starting Grid Point
-	int32 StartX;
-	int32 StartY;
+	int32 CellX;
+	int32 CellY;
 
-	// Target Point
-	int32 EndX;
-	int32 EndY;
+	int CurrentStep = 0;
+	int NumberOfRooms = 50; // how many steps to take
+
+	float timer = 0.0f;
+	float maxTimer = 0.0f;
 };
