@@ -26,6 +26,8 @@ void ADungeonDFSGen::BeginPlay()
 	// Create a grid and populate it with static mesh based off the DFS perhaps
 	CreateGrid();
 	RandomPointOnGrid();
+
+	Visited.SetNum(LevelGrid.Num());
 }
 
 // Called every frame
@@ -33,8 +35,13 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(LevelGrid.Num()) + " - " + FString::FromInt(StartX) + " " + FString::FromInt(StartY) + " = " + FString::FromInt(StartX+1) + " " + FString::FromInt(StartY+1));
-	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(CellX) + " - " + FString::FromInt(CellY));
+	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(LevelGrid.Num()) + " - " + FString::FromInt(StartX) + " " + FString::FromInt(StartY) + " = " + FString::FromInt(StartX+1) + " " + FString::FromInt(StartY+1));
+	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(CellX) + " - " + FString::FromInt(CellY));
+	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, /*Visited(CellX, CellY) ? "True" : "False" + */ FString::FromInt(CellX) + " - " + FString::FromInt(CellY) );
+
+	int Calc = (CellY * GridWidth) + CellX;
+	//int Calc2 = (CellY * GridWidth) + CellX + 1;
+	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(dir) + " - Calc 1: " + FString::FromInt(Calc) /*+ " - Calc 2: " + FString::FromInt(Calc2)*/);
 	//DirectionToTravel();
 
 	timer += DeltaTime;
@@ -60,51 +67,38 @@ void ADungeonDFSGen::RandomPointOnGrid()
 	CellY = FMath::RandHelper(GridHeight);
 }
 
-int32 ADungeonDFSGen::DirectionToTravel()
-{
-	// Gives a random direction to travel in N E S W -- 0-3
-	return FMath::RandHelper(4);
-}
-
-AActor * ADungeonDFSGen::GetGridActor(int32 x, int32 y)
-{
-	if (LevelGrid.IsValidIndex(GridWidth * y + x) == true)
-		return Cast<AActor>(LevelGrid[GridWidth * y + x].Get());
-	return NULL;
-}
-
 void ADungeonDFSGen::DFSAlgorithm()
 {
-	//if (CellX > 0 && CellY > 0)
-	{
-		int32 dir = FMath::RandHelper(4);
+	dir = FMath::RandHelper(4);
 
-		switch (dir)
-		{
-		case 0: // North
-			CellY--;
-			break;
-		case 1: // East
-			CellX++;
-			break;
-		case 2: // South
-			CellY++;
-			break;
-		case 3: // West
-			CellX--;
-			break;
-		}
+	switch (dir)
+	{
+	case 0: // North
+		//if (Visited[CurrentStep - 10] != true)
+			CellY--; //goes down by 10
+		break;
+	case 1: // East
+		//if (Visited[CurrentStep + 1] == false)
+			CellX++; //goes up by 1
+		break;
+	case 2: // South
+		//if (Visited[CurrentStep + 10] != true)
+			CellY++; //goes up by 10
+		break;
+	case 3: // West
+		//if (Visited[CurrentStep - 1] == false)
+			CellX--; //goes down by 1
+		break;
+	}
 
 		int RoomSize = 5;
 		int GridSpacing = 100;
-		FVector loc = GetTransform().GetLocation();
-		loc.X += (float)CellX * (RoomSize * GridSpacing);
-		loc.Y += (float)CellY * (RoomSize * GridSpacing);
-		loc.Z += 350;
-		AActor * pActor = GetWorld()->SpawnActor(ActorArray[0], &loc, NULL);
-		//LevelGrid[GridWidth * CellY + CellX] = pActor; //giving an index out of bounds
-	}
+		CurrentStep = (CellY * GridWidth) + CellX;
+		FVector RoomLocation = GetTransform().GetLocation();
+		RoomLocation.X += (float)CellX * (RoomSize * GridSpacing);
+		RoomLocation.Y += (float)CellY * (RoomSize * GridSpacing);
+		RoomLocation.Z += 350;
+		AActor *Room = GetWorld()->SpawnActor(ActorArray[0], &RoomLocation, NULL);
+		Visited[CurrentStep] = true;
 }
-
-
 

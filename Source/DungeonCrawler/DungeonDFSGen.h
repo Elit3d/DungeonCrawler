@@ -22,8 +22,6 @@ public:
 
 	void CreateGrid();
 	void RandomPointOnGrid();
-	int32 DirectionToTravel();
-	AActor *GetGridActor(int32 x, int32 y); // Return Null if nothing in cell grid
 
 	void CheckNeighbourGrid();
 
@@ -41,6 +39,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Actors)
 		TArray< TSubclassOf<class AActor> > ActorArray;
+
+	UPROPERTY(EditAnywhere)
+		TArray<bool> Visited;
 private:
 	// Starting Grid Point
 	int32 CellX;
@@ -50,5 +51,6 @@ private:
 	int NumberOfRooms = 50; // how many steps to take
 
 	float timer = 0.0f;
-	float maxTimer = 0.0f;
+	float maxTimer = 5.0f;
+	int32 dir;
 };
