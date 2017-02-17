@@ -14,11 +14,15 @@ public:
 	// Sets default values for this actor's properties
 	ADungeonDFSGen();
 
+	// before begin play but after contructor
+	virtual void PostInitializeComponents() override;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
+
 
 	void CreateGrid();
 	void RandomPointOnGrid();
@@ -31,6 +35,9 @@ public:
 		int32 GridWidth;
 	UPROPERTY(EditAnywhere, Category = "Level Properties")
 		int32 GridHeight;
+	UPROPERTY(EditAnywhere, Category = "Level Properties")
+		int NumberOfRooms = 10; // how many steps to take
+
 	UPROPERTY(EditAnywhere, Category = "Room Component")
 		class UCreateRoomComponent *RoomComponent;
 
@@ -42,15 +49,23 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TArray<bool> Visited;
+
+	UPROPERTY(EditAnywhere, Category=Timer)
+		float maxTimer = 1.0f;
 private:
 	// Starting Grid Point
+	int StartLocation;
+	int EndLocation;
+
 	int32 CellX;
 	int32 CellY;
 
 	int CurrentStep = 0;
-	int NumberOfRooms = 50; // how many steps to take
+	int RoomCounter = 0;
 
 	float timer = 0.0f;
-	float maxTimer = 5.0f;
 	int32 dir;
+	int rand=0;
+
+	AActor *Room;
 };

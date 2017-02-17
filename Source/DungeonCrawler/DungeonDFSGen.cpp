@@ -16,6 +16,15 @@ ADungeonDFSGen::ADungeonDFSGen()
 
 	GridWidth = 20;
 	GridHeight = 20;
+
+	CreateGrid();
+	RandomPointOnGrid();
+}
+
+void ADungeonDFSGen::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	// Create a grid and populate it with static mesh based off the DFS perhaps
 }
 
 // Called when the game starts or when spawned
@@ -23,11 +32,11 @@ void ADungeonDFSGen::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Create a grid and populate it with static mesh based off the DFS perhaps
-	CreateGrid();
-	RandomPointOnGrid();
+	//LevelGrid.SetNum(GridWidth * GridHeight, true);
 
-	Visited.SetNum(LevelGrid.Num());
+	Visited.SetNum(GridWidth * GridHeight, true);
+	//CurrentStep = (CellY * GridWidth) + CellX;
+	StartLocation = CurrentStep = (CellY * GridWidth) + CellX;
 }
 
 // Called every frame
@@ -39,17 +48,16 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(CellX) + " - " + FString::FromInt(CellY));
 	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, /*Visited(CellX, CellY) ? "True" : "False" + */ FString::FromInt(CellX) + " - " + FString::FromInt(CellY) );
 
-	int Calc = (CellY * GridWidth) + CellX;
+	int Calc = CellX + CellY;
 	//int Calc2 = (CellY * GridWidth) + CellX + 1;
-	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(dir) + " - Calc 1: " + FString::FromInt(Calc) /*+ " - Calc 2: " + FString::FromInt(Calc2)*/);
+	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(EndLocation) /*+ " - Calc 1: " + FString::FromInt(Calc)*/ + " - Calc 2: " + FString::FromInt(CurrentStep) + " " + FString::FromInt(StartLocation));
 	//DirectionToTravel();
 
 	timer += DeltaTime;
 	if (timer >= maxTimer)
 	{
-		//if (CurrentStep <= NumberOfRooms)
+		if (RoomCounter < NumberOfRooms)
 		{
-			CurrentStep++;
 			timer = 0.0f;
 			DFSAlgorithm();
 		}
@@ -63,42 +71,93 @@ void ADungeonDFSGen::CreateGrid()
 
 void ADungeonDFSGen::RandomPointOnGrid()
 {
-	CellX = FMath::RandHelper(GridWidth);
-	CellY = FMath::RandHelper(GridHeight);
+	//CellX = FMath::RandHelper(GridWidth);
+	//CellY = FMath::RandHelper(GridHeight);
+	CellX = 10;
+	CellY = 10;
+
+	//CurrentStep = (CellY * GridWidth) + CellX;
 }
 
 void ADungeonDFSGen::DFSAlgorithm()
 {
+	if (Visited.Num() < 0) return;
+	// Exceeds min bounds
+	if (CurrentStep < 50) return;
+	// Exceeds max bounds
+	if (CurrentStep > 350) return;
+
+	int RoomSize = 5;
+	int GridSpacing = 100;
+	CurrentStep = (CellY * GridWidth) + CellX;
+	FVector RoomLocation = GetTransform().GetLocation();
+	RoomLocation.X += (float)CellX * (RoomSize * GridSpacing);
+	RoomLocation.Y += (float)CellY * (RoomSize * GridSpacing);
+	RoomLocation.Z += 350;
+
 	dir = FMath::RandHelper(4);
+
+	// rand mesh but this will be replaced
+	rand++;
+
+	if (rand > 1)
+	{
+		rand = 0;
+	}
 
 	switch (dir)
 	{
 	case 0: // North
-		//if (Visited[CurrentStep - 10] != true)
-			CellY--; //goes down by 10
+		if (Visited[CurrentStep - 20] == false)
+		{
+			CellY--; //goes down by 20
+
+			if (ActorArray[rand] != nullptr)
+				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+
+			RoomCounter++;
+		}
 		break;
 	case 1: // East
-		//if (Visited[CurrentStep + 1] == false)
+		if (Visited[CurrentStep + 1] == false)
+		{
 			CellX++; //goes up by 1
+
+			if (ActorArray[rand] != nullptr)
+				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+			
+			RoomCounter++;
+		}
 		break;
 	case 2: // South
-		//if (Visited[CurrentStep + 10] != true)
-			CellY++; //goes up by 10
+		if (Visited[CurrentStep + 20] == false)
+		{
+			CellY++; //goes up by 20
+
+			if (ActorArray[rand] != nullptr)
+				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+		
+			RoomCounter++;
+		}
 		break;
 	case 3: // West
-		//if (Visited[CurrentStep - 1] == false)
+		if (Visited[CurrentStep - 1] == false)
+		{
 			CellX--; //goes down by 1
+
+			if (ActorArray[rand] != nullptr)
+				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+		
+			RoomCounter++;
+		}
 		break;
 	}
 
-		int RoomSize = 5;
-		int GridSpacing = 100;
-		CurrentStep = (CellY * GridWidth) + CellX;
-		FVector RoomLocation = GetTransform().GetLocation();
-		RoomLocation.X += (float)CellX * (RoomSize * GridSpacing);
-		RoomLocation.Y += (float)CellY * (RoomSize * GridSpacing);
-		RoomLocation.Z += 350;
-		AActor *Room = GetWorld()->SpawnActor(ActorArray[0], &RoomLocation, NULL);
 		Visited[CurrentStep] = true;
+
+		if (RoomCounter >= 10)
+		{
+			EndLocation = CurrentStep;
+		}
 }
 
