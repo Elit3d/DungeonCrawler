@@ -32,6 +32,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
 		int NumberOfRooms = 20;
 	UPROPERTY(EditAnywhere, Category = "Static Mesh")
-		TArray<UStaticMesh*> Rooms;
+		TArray<TSubclassOf<class ARoomSetup>> Rooms;
+	//UPROPERTY(EditAnywhere, Category = "Chest spawns")
+	//	TArray<ATargetPoint*> TargetPoint;
 private:
 };

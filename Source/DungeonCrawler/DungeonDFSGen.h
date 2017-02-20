@@ -5,6 +5,27 @@
 #include "GameFramework/Actor.h"
 #include "DungeonDFSGen.generated.h"
 
+UENUM(BlueprintType)
+enum EDirectionCheck
+{
+	NORTH,
+	EAST,
+	SOUTH,
+	WEST
+};
+
+USTRUCT(BlueprintType)
+struct FTestStruct
+{
+	GENERATED_BODY();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+		TArray<bool> Direction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+		int CurrentCell;
+};
+
 UCLASS()
 class DUNGEONCRAWLER_API ADungeonDFSGen : public AActor
 {
@@ -30,6 +51,7 @@ public:
 	void CheckNeighbourGrid();
 
 	void DFSAlgorithm();
+	void CellChecker();
 	
 	UPROPERTY(EditAnywhere, Category = "Level Properties")
 		int32 GridWidth;
@@ -50,8 +72,17 @@ public:
 	UPROPERTY(EditAnywhere)
 		TArray<bool> Visited;
 
+	//UPROPERTY(EditAnywhere)
+	//	TArray<int> RoomArray;
+
 	UPROPERTY(EditAnywhere, Category=Timer)
 		float maxTimer = 1.0f;
+
+
+	UPROPERTY(EditAnywhere, Category="Tester Struct")
+		TArray<FTestStruct> Testing;
+	UPROPERTY(EditAnywhere, Category = "Tester Struct")
+		FTestStruct TestStruct;
 private:
 	// Starting Grid Point
 	int StartLocation;
@@ -67,5 +98,7 @@ private:
 	int32 dir;
 	int rand=0;
 
+	int testCOunter = 0;
 	AActor *Room;
+	EDirectionCheck DirectionCheck;
 };

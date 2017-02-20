@@ -50,7 +50,7 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 
 	int Calc = CellX + CellY;
 	//int Calc2 = (CellY * GridWidth) + CellX + 1;
-	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(EndLocation) /*+ " - Calc 1: " + FString::FromInt(Calc)*/ + " - Calc 2: " + FString::FromInt(CurrentStep) + " " + FString::FromInt(StartLocation));
+	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(EndLocation) /*+ " - Calc 1: " + FString::FromInt(Calc)*/ + " - Calc 2: " + FString::FromInt((CellY * GridWidth) + CellX) + " " + FString::FromInt(CellY));
 	//DirectionToTravel();
 
 	timer += DeltaTime;
@@ -60,6 +60,55 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 		{
 			timer = 0.0f;
 			DFSAlgorithm();
+		}
+		else
+		{
+			//CellChecker();
+		}
+	}
+
+	//for (int i = 0; i < TestStruct.Num(); i++)
+	//{
+	//	if (Visited[TestStruct[i].RoomArray[i] - 20] == true)
+	//	{
+	//		DirectionCheck = EDirectionCheck::NORTH;
+	//		UE_LOG(LogTemp, Warning, TEXT("NORTH"));
+	//	}
+	//	if (Visited[RoomArray[i] + 1] == true)
+	//	{
+	//		DirectionCheck = EDirectionCheck::EAST;
+	//		UE_LOG(LogTemp, Warning, TEXT("EAST"));
+	//	}
+	//	if (Visited[RoomArray[i] + 20] == true)
+	//	{
+	//		DirectionCheck = EDirectionCheck::SOUTH;
+	//		UE_LOG(LogTemp, Warning, TEXT("SOUTH"));
+	//	}
+	//	if (Visited[RoomArray[i] - 1] == true)
+	//	{
+	//		DirectionCheck = EDirectionCheck::WEST;
+	//		UE_LOG(LogTemp, Warning, TEXT("WEST"));
+	//	}
+	//}
+
+	for (int i = 0; i < Testing.Num(); i++)
+	{
+
+		if (Visited[Testing[i].CurrentCell - 20] == true) // NORTH
+		{
+			Testing[i].Direction[0] = true;
+		}
+		if (Visited[Testing[i].CurrentCell + 1] == true) // EAST
+		{
+			Testing[i].Direction[1] = true;
+		}
+		if (Visited[Testing[i].CurrentCell + 20] == true) // SOUTH
+		{
+			Testing[i].Direction[2] = true;
+		}
+		if (Visited[Testing[i].CurrentCell - 1] == true) // WEST
+		{
+			Testing[i].Direction[3] = true;
 		}
 	}
 }
@@ -116,6 +165,10 @@ void ADungeonDFSGen::DFSAlgorithm()
 				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
 
 			RoomCounter++;
+			//RoomArray.Push(CurrentStep);
+			TestStruct.CurrentCell = CurrentStep;
+			TestStruct.Direction.SetNum(4, true);
+			Testing.Add(TestStruct);
 		}
 		break;
 	case 1: // East
@@ -127,6 +180,10 @@ void ADungeonDFSGen::DFSAlgorithm()
 				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
 			
 			RoomCounter++;
+			//RoomArray.Push(CurrentStep);
+			TestStruct.CurrentCell = CurrentStep;
+			TestStruct.Direction.SetNum(4, true);
+			Testing.Add(TestStruct);
 		}
 		break;
 	case 2: // South
@@ -138,6 +195,10 @@ void ADungeonDFSGen::DFSAlgorithm()
 				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
 		
 			RoomCounter++;
+			//RoomArray.Push(CurrentStep);
+			TestStruct.CurrentCell = CurrentStep;
+			TestStruct.Direction.SetNum(4, true);
+			Testing.Add(TestStruct);
 		}
 		break;
 	case 3: // West
@@ -149,6 +210,10 @@ void ADungeonDFSGen::DFSAlgorithm()
 				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
 		
 			RoomCounter++;
+			//RoomArray.Push(CurrentStep);
+			TestStruct.CurrentCell = CurrentStep;
+			TestStruct.Direction.SetNum(4, true);
+			Testing.Add(TestStruct);
 		}
 		break;
 	}
@@ -159,5 +224,35 @@ void ADungeonDFSGen::DFSAlgorithm()
 		{
 			EndLocation = CurrentStep;
 		}
+
+		//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, " - Calc 2: " + FString::FromInt((CellY * GridWidth) + CellX));
+}
+
+void ADungeonDFSGen::CellChecker()
+{
+	int RoomSize = 5;
+	int GridSpacing = 100;
+	FVector RoomLocation = GetTransform().GetLocation();
+	RoomLocation.X += (float)CellX * (RoomSize * GridSpacing);
+	RoomLocation.Y += (float)CellY * (RoomSize * GridSpacing);
+	RoomLocation.Z += 350;
+	FRotator RoomRotation;
+
+	//for (int i = 0; i < RoomArray.Num(); i++)
+	//{
+	//	if (Visited[RoomArray[i] + 20] == true && Visited[RoomArray[i] - 1] == true && Visited[RoomArray[i] - 20] == true && Visited[RoomArray[i] + 1] == true) // top left corner
+	//	{
+	//		RoomRotation.Yaw = 75.f;
+	//		Room = GetWorld()->SpawnActor(ActorArray[0], &RoomLocation, &RoomRotation);
+	//	}
+	//	else if (Visited[RoomArray[i] + 1] == false)
+	//	{
+	//		RoomRotation.Yaw = 180.f;
+	//	}
+	//	else
+	//	{
+
+	//	}
+	//}
 }
 
