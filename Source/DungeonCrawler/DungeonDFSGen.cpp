@@ -32,10 +32,7 @@ void ADungeonDFSGen::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//LevelGrid.SetNum(GridWidth * GridHeight, true);
-
 	Visited.SetNum(GridWidth * GridHeight, true);
-	//CurrentStep = (CellY * GridWidth) + CellX;
 	StartLocation = CurrentStep = (CellY * GridWidth) + CellX;
 }
 
@@ -47,7 +44,7 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(LevelGrid.Num()) + " - " + FString::FromInt(StartX) + " " + FString::FromInt(StartY) + " = " + FString::FromInt(StartX+1) + " " + FString::FromInt(StartY+1));
 	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(CellX) + " - " + FString::FromInt(CellY));
 	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, /*Visited(CellX, CellY) ? "True" : "False" + */ FString::FromInt(CellX) + " - " + FString::FromInt(CellY) );
-
+//	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(dir) + " - " + FString::FromInt(dir1));
 	int Calc = CellX + CellY;
 	//int Calc2 = (CellY * GridWidth) + CellX + 1;
 	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(EndLocation) /*+ " - Calc 1: " + FString::FromInt(Calc)*/ + " - Calc 2: " + FString::FromInt((CellY * GridWidth) + CellX) + " " + FString::FromInt(CellY));
@@ -67,33 +64,9 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 		}
 	}
 
-	//for (int i = 0; i < TestStruct.Num(); i++)
-	//{
-	//	if (Visited[TestStruct[i].RoomArray[i] - 20] == true)
-	//	{
-	//		DirectionCheck = EDirectionCheck::NORTH;
-	//		UE_LOG(LogTemp, Warning, TEXT("NORTH"));
-	//	}
-	//	if (Visited[RoomArray[i] + 1] == true)
-	//	{
-	//		DirectionCheck = EDirectionCheck::EAST;
-	//		UE_LOG(LogTemp, Warning, TEXT("EAST"));
-	//	}
-	//	if (Visited[RoomArray[i] + 20] == true)
-	//	{
-	//		DirectionCheck = EDirectionCheck::SOUTH;
-	//		UE_LOG(LogTemp, Warning, TEXT("SOUTH"));
-	//	}
-	//	if (Visited[RoomArray[i] - 1] == true)
-	//	{
-	//		DirectionCheck = EDirectionCheck::WEST;
-	//		UE_LOG(LogTemp, Warning, TEXT("WEST"));
-	//	}
-	//}
-
+	//Check surrounding tiles
 	for (int i = 0; i < Testing.Num(); i++)
 	{
-
 		if (Visited[Testing[i].CurrentCell - 20] == true) // NORTH
 		{
 			Testing[i].Direction[0] = true;
@@ -110,6 +83,8 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 		{
 			Testing[i].Direction[3] = true;
 		}
+
+		//SURROUNDING TILES THAT ARE FALSE WILL BE A WALL https://www.youtube.com/watch?v=wb6u2JImsyE
 	}
 }
 
@@ -122,19 +97,17 @@ void ADungeonDFSGen::RandomPointOnGrid()
 {
 	//CellX = FMath::RandHelper(GridWidth);
 	//CellY = FMath::RandHelper(GridHeight);
-	CellX = 10;
-	CellY = 10;
-
-	//CurrentStep = (CellY * GridWidth) + CellX;
+	CellX = GridWidth / 2; // mid X
+	CellY = GridHeight / 2; // mid Y
 }
 
 void ADungeonDFSGen::DFSAlgorithm()
 {
 	if (Visited.Num() < 0) return;
 	// Exceeds min bounds
-	if (CurrentStep < 50) return;
+	if (CurrentStep - GridWidth <= 0 || CurrentStep + GridWidth <= 0) return;
 	// Exceeds max bounds
-	if (CurrentStep > 350) return;
+	if (CurrentStep - GridWidth >= GridWidth * GridHeight || CurrentStep + GridWidth >= GridWidth * GridHeight) return;
 
 	int RoomSize = 5;
 	int GridSpacing = 100;
@@ -154,10 +127,12 @@ void ADungeonDFSGen::DFSAlgorithm()
 		rand = 0;
 	}
 
+	// end rand mesh but this will be replaced
+
 	switch (dir)
 	{
 	case 0: // North
-		if (Visited[CurrentStep - 20] == false)
+		if (Visited[CurrentStep - GridWidth] == false)
 		{
 			CellY--; //goes down by 20
 
@@ -178,7 +153,7 @@ void ADungeonDFSGen::DFSAlgorithm()
 
 			if (ActorArray[rand] != nullptr)
 				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
-			
+
 			RoomCounter++;
 			//RoomArray.Push(CurrentStep);
 			TestStruct.CurrentCell = CurrentStep;
@@ -187,13 +162,13 @@ void ADungeonDFSGen::DFSAlgorithm()
 		}
 		break;
 	case 2: // South
-		if (Visited[CurrentStep + 20] == false)
+		if (Visited[CurrentStep + GridWidth] == false)
 		{
 			CellY++; //goes up by 20
 
 			if (ActorArray[rand] != nullptr)
 				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
-		
+
 			RoomCounter++;
 			//RoomArray.Push(CurrentStep);
 			TestStruct.CurrentCell = CurrentStep;
@@ -208,7 +183,7 @@ void ADungeonDFSGen::DFSAlgorithm()
 
 			if (ActorArray[rand] != nullptr)
 				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
-		
+
 			RoomCounter++;
 			//RoomArray.Push(CurrentStep);
 			TestStruct.CurrentCell = CurrentStep;
@@ -218,14 +193,12 @@ void ADungeonDFSGen::DFSAlgorithm()
 		break;
 	}
 
-		Visited[CurrentStep] = true;
+	Visited[CurrentStep] = true;
 
-		if (RoomCounter >= 10)
-		{
-			EndLocation = CurrentStep;
-		}
-
-		//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, " - Calc 2: " + FString::FromInt((CellY * GridWidth) + CellX));
+	if (RoomCounter >= 10)
+	{
+		EndLocation = CurrentStep;
+	}
 }
 
 void ADungeonDFSGen::CellChecker()

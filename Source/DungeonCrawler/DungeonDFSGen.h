@@ -83,6 +83,8 @@ public:
 		TArray<FTestStruct> Testing;
 	UPROPERTY(EditAnywhere, Category = "Tester Struct")
 		FTestStruct TestStruct;
+	UPROPERTY(EditAnywhere, Category = "Direction Array")
+	TArray<int32> dirArray;
 private:
 	// Starting Grid Point
 	int StartLocation;
