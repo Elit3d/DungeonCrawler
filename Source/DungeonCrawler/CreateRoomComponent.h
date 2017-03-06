@@ -21,6 +21,9 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
+	int GetWeightedRandom();
+
+
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
 		int Width = 5;
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
@@ -31,9 +34,9 @@ public:
 		int Y = 0;
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
 		int NumberOfRooms = 20;
-	UPROPERTY(EditAnywhere, Category = "Static Mesh")
-		TArray<TSubclassOf<class ARoomSetup>> Rooms;
-	//UPROPERTY(EditAnywhere, Category = "Chest spawns")
-	//	TArray<ATargetPoint*> TargetPoint;
+	UPROPERTY(EditAnywhere, Category = "Static Room Mesh")
+		TArray<TSubclassOf<class AActor>> Rooms;
+	UPROPERTY(EditAnywhere, Category = "Random Room Chance")
+		TArray<int32> ChanceOfRoom; // Gives us a value of the room being spawned
 private:
 };

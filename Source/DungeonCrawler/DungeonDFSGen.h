@@ -17,7 +17,7 @@ enum EDirectionCheck
 USTRUCT(BlueprintType)
 struct FTestStruct
 {
-	GENERATED_BODY();
+	GENERATED_USTRUCT_BODY();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
 		TArray<bool> Direction;
@@ -44,6 +44,7 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
+	int GetFirstTravelDir();
 
 	void CreateGrid();
 	void RandomPointOnGrid();
@@ -51,7 +52,15 @@ public:
 	void CheckNeighbourGrid();
 
 	void DFSAlgorithm();
-	void CellChecker();
+
+	void AddRoomToGrid();
+
+	UFUNCTION(BlueprintCallable, Category = "Dungeon Level Creation")
+		void CreateLevel(); // Clears off values to create a new level
+
+	bool CanMoveCheck(); // Checks the neighbour cells to make sure that we can still move
+
+	bool ChangeDir(int percentage); // Percentage of chance to go to dir 4
 	
 	UPROPERTY(EditAnywhere, Category = "Level Properties")
 		int32 GridWidth;
@@ -59,6 +68,8 @@ public:
 		int32 GridHeight;
 	UPROPERTY(EditAnywhere, Category = "Level Properties")
 		int NumberOfRooms = 10; // how many steps to take
+	UPROPERTY(EditAnywhere, Category = "Level Properties")
+		int StartLocation; // Starting Grid Point
 
 	UPROPERTY(EditAnywhere, Category = "Room Component")
 		class UCreateRoomComponent *RoomComponent;
@@ -71,23 +82,32 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TArray<bool> Visited;
+	UPROPERTY(EditAnywhere)
+		TArray<bool> Border;
+	UPROPERTY(EditAnywhere)
+		TArray<AActor*> RoomArray;
 
-	//UPROPERTY(EditAnywhere)
-	//	TArray<int> RoomArray;
 
 	UPROPERTY(EditAnywhere, Category=Timer)
 		float maxTimer = 1.0f;
-
 
 	UPROPERTY(EditAnywhere, Category="Tester Struct")
 		TArray<FTestStruct> Testing;
 	UPROPERTY(EditAnywhere, Category = "Tester Struct")
 		FTestStruct TestStruct;
 	UPROPERTY(EditAnywhere, Category = "Direction Array")
-	TArray<int32> dirArray;
+		TArray<int32> dirArray;
+	UPROPERTY(EditAnywhere, Category = "Direction Array")
+		int InitDirection;
+
+	UPROPERTY(EditAnywhere, Category = "Direction Chance")
+		int MinChance = 15;
+	UPROPERTY(EditAnywhere, Category = "Direction Chance")
+		int MaxChance = 30;
+
+	UPROPERTY(EditAnywhere, Category = "Grid Properties")
+		TArray<FVector2D> CellArray;
 private:
-	// Starting Grid Point
-	int StartLocation;
 	int EndLocation;
 
 	int32 CellX;
@@ -98,9 +118,21 @@ private:
 
 	float timer = 0.0f;
 	int32 dir;
+
+	int32 dirTravelTime = 0; // Gives a rand value of how long we want to travel in 1 direction for
+	int32 northCounter = 0;
+	int32 eastCounter = 0;
+	int32 southCounter = 0;
 	int rand=0;
 
 	int testCOunter = 0;
 	AActor *Room;
+	AActor *Chest;
+	TArray<AActor*> ChestArray;
 	EDirectionCheck DirectionCheck;
+	int Sum = 0;
+
+	int maxChestSpawn = 0;
+
+	float RoomRot[4];
 };

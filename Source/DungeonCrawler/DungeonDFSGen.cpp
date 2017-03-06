@@ -17,8 +17,15 @@ ADungeonDFSGen::ADungeonDFSGen()
 	GridWidth = 20;
 	GridHeight = 20;
 
-	CreateGrid();
-	RandomPointOnGrid();
+	//CreateGrid();
+	//RandomPointOnGrid();
+
+	//dirArray.SetNum(4, true);
+
+	//for (int i = 0; i < dirArray.Num(); i++)
+	//{
+	//	dirArray[i] = 10;
+	//}
 }
 
 void ADungeonDFSGen::PostInitializeComponents()
@@ -32,23 +39,13 @@ void ADungeonDFSGen::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Visited.SetNum(GridWidth * GridHeight, true);
-	StartLocation = CurrentStep = (CellY * GridWidth) + CellX;
+	CreateLevel(); // Setup level on first play
 }
 
 // Called every frame
 void ADungeonDFSGen::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(LevelGrid.Num()) + " - " + FString::FromInt(StartX) + " " + FString::FromInt(StartY) + " = " + FString::FromInt(StartX+1) + " " + FString::FromInt(StartY+1));
-	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(CellX) + " - " + FString::FromInt(CellY));
-	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, /*Visited(CellX, CellY) ? "True" : "False" + */ FString::FromInt(CellX) + " - " + FString::FromInt(CellY) );
-//	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(dir) + " - " + FString::FromInt(dir1));
-	int Calc = CellX + CellY;
-	//int Calc2 = (CellY * GridWidth) + CellX + 1;
-	//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::FromInt(EndLocation) /*+ " - Calc 1: " + FString::FromInt(Calc)*/ + " - Calc 2: " + FString::FromInt((CellY * GridWidth) + CellX) + " " + FString::FromInt(CellY));
-	//DirectionToTravel();
 
 	timer += DeltaTime;
 	if (timer >= maxTimer)
@@ -60,32 +57,68 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 		}
 		else
 		{
-			//CellChecker();
+			if (ChestArray.Num() <= maxChestSpawn)
+			{
+				FVector RoomLocation = FVector(0, 0, 0);
+				if (ActorArray[3] != nullptr)
+				{
+					Chest = GetWorld()->SpawnActor(ActorArray[3], &RoomLocation, NULL);
+					ChestArray.Push(Chest);
+				}
+			}
 		}
 	}
 
 	//Check surrounding tiles
-	for (int i = 0; i < Testing.Num(); i++)
+	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::T))
 	{
-		if (Visited[Testing[i].CurrentCell - 20] == true) // NORTH
-		{
-			Testing[i].Direction[0] = true;
-		}
-		if (Visited[Testing[i].CurrentCell + 1] == true) // EAST
-		{
-			Testing[i].Direction[1] = true;
-		}
-		if (Visited[Testing[i].CurrentCell + 20] == true) // SOUTH
-		{
-			Testing[i].Direction[2] = true;
-		}
-		if (Visited[Testing[i].CurrentCell - 1] == true) // WEST
-		{
-			Testing[i].Direction[3] = true;
-		}
+		int RoomSize = 10;
+		int GridSpacing = 100;
+		FVector RoomLocation = GetTransform().GetLocation();
+		//RoomLocation.X += (float)CellX * (RoomSize * GridSpacing);
+		//RoomLocation.Y += (float)CellY * (RoomSize * GridSpacing);
+		//RoomLocation.Z += 350;
 
-		//SURROUNDING TILES THAT ARE FALSE WILL BE A WALL https://www.youtube.com/watch?v=wb6u2JImsyE
+		for (int i = 0; i < Testing.Num(); i++)
+		{
+			if (Visited[Testing[i].CurrentCell - 20] == false) // NORTH
+			{
+				
+				GetWorld()->SpawnActor(ActorArray[2], &RoomLocation, NULL);
+			}
+			if (Visited[Testing[i].CurrentCell + 1] == false) // EAST
+			{
+				//Testing[i].Direction[1] = true;
+				GetWorld()->SpawnActor(ActorArray[2], &RoomLocation, NULL);
+			}
+			if (Visited[Testing[i].CurrentCell + 20] == false) // SOUTH
+			{
+				//Testing[i].Direction[2] = true;
+				GetWorld()->SpawnActor(ActorArray[2], &RoomLocation, NULL);
+			}
+			if (Visited[Testing[i].CurrentCell - 1] == false) // WEST
+			{
+				//Testing[i].Direction[3] = true;
+				GetWorld()->SpawnActor(ActorArray[2], &RoomLocation, NULL);
+			}
+		}
 	}
+
+	//	//SURROUNDING TILES THAT ARE FALSE WILL BE A WALL https://www.youtube.com/watch?v=wb6u2JImsyE
+	//}
+
+	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::C))
+	{
+		//CreateLevel(); // Clears the arrays and stuff
+		UE_LOG(LogTemp, Warning, TEXT("%d "), RoomComponent->GetWeightedRandom());
+	}
+}
+
+int ADungeonDFSGen::GetFirstTravelDir()
+{
+	for (int i = 0; i < dirArray.Num(); i++)
+		return FMath::RandHelper(dirArray[i]);
+	return 0;
 }
 
 void ADungeonDFSGen::CreateGrid()
@@ -93,139 +126,318 @@ void ADungeonDFSGen::CreateGrid()
 	LevelGrid.SetNum(GridWidth * GridHeight, true);
 }
 
+bool ADungeonDFSGen::ChangeDir(int percentage)
+{
+	return (FMath::RandRange(1, 100 / percentage) == 1 ? true : false);
+}
+
 void ADungeonDFSGen::RandomPointOnGrid()
 {
-	//CellX = FMath::RandHelper(GridWidth);
-	//CellY = FMath::RandHelper(GridHeight);
+	//CellX = FMath::RandHelper(GridWidth-1);
+	//CellY = FMath::RandHelper(GridHeight-1);
 	CellX = GridWidth / 2; // mid X
 	CellY = GridHeight / 2; // mid Y
+	CellArray.Push(FVector2D(CellX, CellY));
 }
 
 void ADungeonDFSGen::DFSAlgorithm()
 {
-	if (Visited.Num() < 0) return;
-	// Exceeds min bounds
-	if (CurrentStep - GridWidth <= 0 || CurrentStep + GridWidth <= 0) return;
-	// Exceeds max bounds
-	if (CurrentStep - GridWidth >= GridWidth * GridHeight || CurrentStep + GridWidth >= GridWidth * GridHeight) return;
 
-	int RoomSize = 5;
-	int GridSpacing = 100;
 	CurrentStep = (CellY * GridWidth) + CellX;
-	FVector RoomLocation = GetTransform().GetLocation();
-	RoomLocation.X += (float)CellX * (RoomSize * GridSpacing);
-	RoomLocation.Y += (float)CellY * (RoomSize * GridSpacing);
-	RoomLocation.Z += 350;
 
-	dir = FMath::RandHelper(4);
+	//dirTravelTime = FMath::RandRange(3, 5);
 
+	if (ChangeDir(15.0f) == true) // 10% chance
+	{
+		dir = 3;
+	}
+	else
+		dir = FMath::RandHelper(3); // Only chose 1 of 3 directions to go // Stops end point being close to first point
+	
+
+
+	//int WeightedRandom = FMath::RandHelper(100);
+
+	//int total = 0;
+
+	//for (int i = 0; i < dirArray.Num(); i++)
+	//{
+	//	total += dirArray[i];
+
+	//	if (WeightedRandom < total)
+	//	{
+	//		FString Print = FString::FromInt((CellY * GridWidth) + CellX) + " - total: " + FString::FromInt(total) + " - weighted: " + FString::FromInt(WeightedRandom);
+	//		UE_LOG(LogTemp, Warning, TEXT("%s"), *Print);
+
+	//		switch (i)
+	//		{
+	//		case 0: // North
+	//			if (Visited[CurrentStep - GridWidth] == false)
+	//			{
+	//				CellY--; //goes down by 20
+
+	//				if (ActorArray[rand] != nullptr)
+	//					Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+
+	//				RoomCounter++;
+	//				//RoomArray.Push(CurrentStep);
+	//				TestStruct.CurrentCell = CurrentStep;
+	//				TestStruct.Direction.SetNum(4, true);
+	//				Testing.Add(TestStruct);
+
+	//				for (size_t j = 0; j < dirArray.Num(); j++)
+	//				{
+	//					if (i == j)
+	//						dirArray[i] = MaxChance;
+	//					else
+	//						dirArray[j] = MinChance;
+	//				}
+	//			}
+	//			break;
+	//		case 1: // East
+	//			if (Visited[CurrentStep + 1] == false)
+	//			{
+	//				CellX++; //goes up by 1
+
+	//				if (ActorArray[rand] != nullptr)
+	//					Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+
+	//				RoomCounter++;
+	//				//RoomArray.Push(CurrentStep);
+	//				TestStruct.CurrentCell = CurrentStep;
+	//				TestStruct.Direction.SetNum(4, true);
+	//				Testing.Add(TestStruct);
+
+	//				for (size_t j = 0; j < dirArray.Num(); j++)
+	//				{
+	//					if (i == j)
+	//						dirArray[i] = MaxChance;
+	//					else
+	//						dirArray[j] = MinChance;
+	//				}
+	//			}
+	//			break;
+	//		case 2: // South
+	//			if (Visited[CurrentStep + GridWidth] == false)
+	//			{
+	//				CellY++; //goes up by 20
+
+	//				if (ActorArray[rand] != nullptr)
+	//					Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+
+	//				RoomCounter++;
+	//				//RoomArray.Push(CurrentStep);
+	//				TestStruct.CurrentCell = CurrentStep;
+	//				TestStruct.Direction.SetNum(4, true);
+	//				Testing.Add(TestStruct);
+
+	//				for (size_t j = 0; j < dirArray.Num(); j++)
+	//				{
+	//					if (i == j)
+	//						dirArray[i] = MaxChance;
+	//					else
+	//						dirArray[j] = MinChance;
+	//				}
+	//			}
+	//			break;
+	//		case 3: // West
+	//			if (Visited[CurrentStep - 1] == false)
+	//			{
+	//				CellX--; //goes down by 1
+
+	//				if (ActorArray[rand] != nullptr)
+	//					Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+
+	//				RoomCounter++;
+	//				//RoomArray.Push(CurrentStep);
+	//				TestStruct.CurrentCell = CurrentStep;
+	//				TestStruct.Direction.SetNum(4, true);
+	//				Testing.Add(TestStruct);
+
+	//				for (size_t j = 0; j < dirArray.Num(); j++)
+	//				{
+	//					if (i == j)
+	//						dirArray[i] = MaxChance;
+	//					else
+	//						dirArray[j] = MinChance;
+	//				}
+	//			}
+	//			break;
+	//		}
+	//		break;
+	//	}
+	//}
 	// rand mesh but this will be replaced
-	rand++;
+
+	/*rand++;
 
 	if (rand > 1)
 	{
 		rand = 0;
-	}
+	}*/
 
 	// end rand mesh but this will be replaced
 
-	switch (dir)
+	//FString Print = FString::FromInt((CellY * GridWidth) + CellX);
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *Print);
+
+	if (CanMoveCheck())
 	{
-	case 0: // North
-		if (Visited[CurrentStep - GridWidth] == false)
+		switch (dir)
 		{
-			CellY--; //goes down by 20
+		case 0: // North
+			if (Visited[CurrentStep - GridWidth] == false 
+				&& CurrentStep - GridWidth > GridWidth && northCounter <= dirTravelTime)
+			{
+				CellY--; //goes down by 20
 
-			if (ActorArray[rand] != nullptr)
-				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
+				AddRoomToGrid();
+			}
+			break;
+		case 1: // East
+			if (Visited[CurrentStep + 1] == false 
+				&& CurrentStep + 1 < Visited.Num() && eastCounter <= dirTravelTime)
+			{
+				CellX++; //goes up by 1
 
-			RoomCounter++;
-			//RoomArray.Push(CurrentStep);
-			TestStruct.CurrentCell = CurrentStep;
-			TestStruct.Direction.SetNum(4, true);
-			Testing.Add(TestStruct);
+				AddRoomToGrid();
+			}
+			break;
+		case 2: // South
+			if (Visited[CurrentStep + GridWidth] == false 
+				&& CurrentStep + GridWidth < Visited.Num() - GridWidth && southCounter <= dirTravelTime)
+			{
+				CellY++; //goes up by 20
+
+				AddRoomToGrid();
+			}
+			break;
+		case 3: // West
+			if (Visited[CurrentStep - 1] == false && CurrentStep - 1 > 0)
+			{
+				CellX--; //goes down by 1
+
+				AddRoomToGrid();
+			}
+			break;
 		}
-		break;
-	case 1: // East
-		if (Visited[CurrentStep + 1] == false)
+	}
+	else
+	{
+		switch (dir)
 		{
-			CellX++; //goes up by 1
-
-			if (ActorArray[rand] != nullptr)
-				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
-
-			RoomCounter++;
-			//RoomArray.Push(CurrentStep);
-			TestStruct.CurrentCell = CurrentStep;
-			TestStruct.Direction.SetNum(4, true);
-			Testing.Add(TestStruct);
+		case 0: // North
+			if (CurrentStep - GridWidth > GridWidth && Border[CurrentStep - GridWidth] == false)
+				CellY--; //goes down by 20
+			break;
+		case 1: // East
+			if (CurrentStep + 1 < Visited.Num() - 1 && Border[CurrentStep + 1] == false)
+				CellX++; //goes up by 1
+			break;
+		case 2: // South
+			if (CurrentStep + GridWidth < Visited.Num() - GridWidth && Border[CurrentStep + GridWidth] == false)
+				CellY++; //goes up by 20
+			break;
+		case 3: // West
+			if (CurrentStep - 1 > 0 && Border[CurrentStep - 1] == false)
+				CellX--; //goes down by 1
+			break;
 		}
-		break;
-	case 2: // South
-		if (Visited[CurrentStep + GridWidth] == false)
-		{
-			CellY++; //goes up by 20
-
-			if (ActorArray[rand] != nullptr)
-				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
-
-			RoomCounter++;
-			//RoomArray.Push(CurrentStep);
-			TestStruct.CurrentCell = CurrentStep;
-			TestStruct.Direction.SetNum(4, true);
-			Testing.Add(TestStruct);
-		}
-		break;
-	case 3: // West
-		if (Visited[CurrentStep - 1] == false)
-		{
-			CellX--; //goes down by 1
-
-			if (ActorArray[rand] != nullptr)
-				Room = GetWorld()->SpawnActor(ActorArray[rand], &RoomLocation, NULL);
-
-			RoomCounter++;
-			//RoomArray.Push(CurrentStep);
-			TestStruct.CurrentCell = CurrentStep;
-			TestStruct.Direction.SetNum(4, true);
-			Testing.Add(TestStruct);
-		}
-		break;
 	}
 
 	Visited[CurrentStep] = true;
 
-	if (RoomCounter >= 10)
+	/*if (RoomCounter >= 10)
 	{
 		EndLocation = CurrentStep;
-	}
+	}*/
 }
 
-void ADungeonDFSGen::CellChecker()
+void ADungeonDFSGen::AddRoomToGrid()
 {
-	int RoomSize = 5;
+	int RoomSize = 10;
 	int GridSpacing = 100;
 	FVector RoomLocation = GetTransform().GetLocation();
 	RoomLocation.X += (float)CellX * (RoomSize * GridSpacing);
 	RoomLocation.Y += (float)CellY * (RoomSize * GridSpacing);
 	RoomLocation.Z += 350;
-	FRotator RoomRotation;
 
-	//for (int i = 0; i < RoomArray.Num(); i++)
-	//{
-	//	if (Visited[RoomArray[i] + 20] == true && Visited[RoomArray[i] - 1] == true && Visited[RoomArray[i] - 20] == true && Visited[RoomArray[i] + 1] == true) // top left corner
-	//	{
-	//		RoomRotation.Yaw = 75.f;
-	//		Room = GetWorld()->SpawnActor(ActorArray[0], &RoomLocation, &RoomRotation);
-	//	}
-	//	else if (Visited[RoomArray[i] + 1] == false)
-	//	{
-	//		RoomRotation.Yaw = 180.f;
-	//	}
-	//	else
-	//	{
+	FRotator RandRotation;
 
-	//	}
-	//}
+	RoomRot[0] = 0.0f;
+	RoomRot[1] = 90.0f;
+	RoomRot[2] = 180.0f;
+	RoomRot[3] = 270.0f;
+
+	for (int i = 0; i < 4; i++)
+	{
+		RandRotation.Yaw = RoomRot[FMath::RandRange(0, 4)];
+	}
+
+	if (RoomComponent->Rooms[RoomComponent->GetWeightedRandom()] != nullptr)
+	{
+		Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
+		RoomArray.Push(Room);
+	}
+
+	RoomCounter++;
+	//RoomArray.Push(CurrentStep);
+	TestStruct.CurrentCell = CurrentStep;
+	TestStruct.Direction.SetNum(4, true);
+	Testing.Add(TestStruct);
 }
 
+void ADungeonDFSGen::CreateLevel()
+{
+	Visited.Empty(); // Clear the Array
+	Testing.Empty(); // Clear the Array
+
+	for (int i = 0; i < RoomArray.Num(); i++)
+	{
+		if(RoomArray[i] != nullptr)
+			RoomArray[i]->Destroy();
+	}
+	RoomArray.Empty();
+
+	for (int i = 0; i < ChestArray.Num(); i++)
+	{
+		if (ChestArray[i] != nullptr)
+			ChestArray[i]->Destroy();
+	}
+	ChestArray.Empty();
+
+	RoomCounter = 0;
+
+	CreateGrid();
+	RandomPointOnGrid();
+
+	//Setup the grid
+	Visited.SetNum(GridWidth * GridHeight, true); // Set up the grid
+	Border.SetNum(GridWidth * GridHeight, true);
+	StartLocation = CurrentStep = (CellY * GridWidth) + CellX; // Create start and current step location
+
+	// Border Stuff
+	for (int i = 0; i < GridWidth; i++)
+	{
+		// Normal border checks
+		Visited[i] = true; // Top border
+		Visited[i*GridWidth] = true; // Left border
+		Visited[GridWidth - 1 + i*GridWidth] = true; // Right border
+		Visited[GridWidth*GridHeight - GridWidth + i] = true; // Bottom border
+															  // For backtracking
+		Border[i] = true; // Top border
+		Border[i*GridWidth] = true; // Left border
+		Border[GridWidth - 1 + i*GridWidth] = true; // Right border
+		Border[GridWidth*GridHeight - GridWidth + i] = true; // Bottom border
+	}
+
+	maxChestSpawn = FMath::RandRange(5,10);
+}
+
+bool ADungeonDFSGen::CanMoveCheck()
+{
+	if (Visited[CurrentStep + 1] && Visited[CurrentStep - 1]
+		&& Visited[CurrentStep + GridWidth] && Visited[CurrentStep - GridWidth])
+		return false;
+	return true;
+}

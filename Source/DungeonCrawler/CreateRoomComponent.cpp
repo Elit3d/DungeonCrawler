@@ -22,7 +22,17 @@ void UCreateRoomComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	//Rooms.SetNum(NumOfRoomMesh, true); // do this in code
+
+	for (int i = 0; i < Rooms.Num(); i++)
+	{
+		if (Rooms.Num() != NULL && Rooms.Num() <= 10)
+		{
+			ChanceOfRoom.SetNum(Rooms.Num(), true);
+			ChanceOfRoom[0] = 200;
+			ChanceOfRoom[i] = 5;
+		}
+	}
 }
 
 
@@ -32,5 +42,28 @@ void UCreateRoomComponent::TickComponent( float DeltaTime, ELevelTick TickType, 
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
 	// ...
+	
+}
+
+
+// in DFS call this for the array number [GetWeightedRandom()] and call Rooms for the new spawnactor
+int UCreateRoomComponent::GetWeightedRandom()
+{
+	int total = 0;
+
+	int WeightedRandom = FMath::RandHelper(245);
+
+	for (int i = 0; i < ChanceOfRoom.Num(); i++)
+	{
+		total += ChanceOfRoom[i];
+
+		if (WeightedRandom < total)
+		{
+			return i;
+
+			break;
+		}
+	}
+	return 0;
 }
 
