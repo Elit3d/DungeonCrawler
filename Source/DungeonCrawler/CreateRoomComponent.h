@@ -38,5 +38,10 @@ public:
 		TArray<TSubclassOf<class AActor>> Rooms;
 	UPROPERTY(EditAnywhere, Category = "Random Room Chance")
 		TArray<int32> ChanceOfRoom; // Gives us a value of the room being spawned
+
+	UPROPERTY(EditAnywhere, Category = "Level Spawn Actor")
+		AActor *Chest;
+	UPROPERTY(EditAnywhere, Category = "Level Spawn Actor")
+		TArray<TSubclassOf<class AActor>> AI;
 private:
 };

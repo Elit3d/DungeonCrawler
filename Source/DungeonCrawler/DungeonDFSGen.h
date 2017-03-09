@@ -44,16 +44,12 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	int GetFirstTravelDir();
-
-	void CreateGrid();
 	void RandomPointOnGrid();
-
-	void CheckNeighbourGrid();
 
 	void DFSAlgorithm();
 
 	void AddRoomToGrid();
+	void AddWallsToGrid();
 
 	UFUNCTION(BlueprintCallable, Category = "Dungeon Level Creation")
 		void CreateLevel(); // Clears off values to create a new level
@@ -75,7 +71,7 @@ public:
 		class UCreateRoomComponent *RoomComponent;
 
 	// 2d grid stored as 1d array
-	TArray< TWeakObjectPtr<AActor> > LevelGrid;
+	//TArray< TWeakObjectPtr<AActor> > LevelGrid;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Actors)
 		TArray< TSubclassOf<class AActor> > ActorArray;
@@ -106,7 +102,13 @@ public:
 		int MaxChance = 30;
 
 	UPROPERTY(EditAnywhere, Category = "Grid Properties")
-		TArray<FVector2D> CellArray;
+		TArray<int32> CellArray;
+
+	UPROPERTY(EditAnywhere, Category = "Grid Location")
+		TArray<FVector> GridLocation;
+
+	UPROPERTY(EditAnywhere, Category = "Level Walls")
+		TArray<AActor*> WallArray;
 private:
 	int EndLocation;
 
@@ -119,20 +121,26 @@ private:
 	float timer = 0.0f;
 	int32 dir;
 
-	int32 dirTravelTime = 0; // Gives a rand value of how long we want to travel in 1 direction for
-	int32 northCounter = 0;
-	int32 eastCounter = 0;
-	int32 southCounter = 0;
 	int rand=0;
 
 	int testCOunter = 0;
 	AActor *Room;
 	AActor *Chest;
+	AActor *Wall;
+	AActor *Enemy;
 	TArray<AActor*> ChestArray;
+	TArray<AActor*> EnemyArray;
 	EDirectionCheck DirectionCheck;
 	int Sum = 0;
 
 	int maxChestSpawn = 0;
 
 	float RoomRot[4];
+
+	FVector PlayerStart;
+
+	int counter1 = 0;
+	int CurrentWallCell = 0;
+
+	FVector WallLocation;
 };
