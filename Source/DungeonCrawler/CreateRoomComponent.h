@@ -43,5 +43,9 @@ public:
 		AActor *Chest;
 	UPROPERTY(EditAnywhere, Category = "Level Spawn Actor")
 		TArray<TSubclassOf<class AActor>> AI;
+
+	int GetTheme();
+	void SetLevelTheme(int _theme);
 private:
+	int theme;
 };

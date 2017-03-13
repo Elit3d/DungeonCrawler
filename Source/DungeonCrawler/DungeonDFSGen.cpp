@@ -68,8 +68,8 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 
 				if (ActorArray[5] != nullptr)
 				{
-					Enemy = GetWorld()->SpawnActor(ActorArray[5], &RoomLocation, NULL);
-					EnemyArray.Push(Enemy);
+						Enemy = GetWorld()->SpawnActor(ActorArray[5], &RoomLocation, NULL);
+						EnemyArray.Push(Enemy);
 				}
 			}
 
@@ -81,46 +81,25 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 	{
 		if (Visited[Testing[i].CurrentCell - GridWidth] == true) // NORTH
 		{
-			if(Border[Testing[i].CurrentCell - GridWidth] == false)
+			if(Border[Testing[i].CurrentCell - GridWidth] == false) // to fix walls not spawning on border
 				Testing[i].Direction[0] = true;
-			else
-				Testing[i].Direction[0] = false;
 		}
 		if (Visited[Testing[i].CurrentCell + 1] == true) // EAST
 		{
-			if (Border[Testing[i].CurrentCell + 1] == false)
+			if (Border[Testing[i].CurrentCell + 1] == false) // to fix walls not spawning on border
 				Testing[i].Direction[1] = true;
-			else
-				Testing[i].Direction[1] = false;
 		}
 		if (Visited[Testing[i].CurrentCell + GridWidth] == true) // SOUTH
 		{
-			if (Border[Testing[i].CurrentCell + GridWidth] == false)
+			if (Border[Testing[i].CurrentCell + GridWidth] == false) // to fix walls not spawning on border
 				Testing[i].Direction[2] = true;
-			else
-				Testing[i].Direction[2] = false;
 		}
 		if (Visited[Testing[i].CurrentCell - 1] == true) // WEST
 		{
-			if (Border[Testing[i].CurrentCell + GridWidth] == false)
+			if (Border[Testing[i].CurrentCell - 1] == false) // to fix walls not spawning on border
 				Testing[i].Direction[3] = true;
-			else
-				Testing[i].Direction[3] = false;
 		}
 
-	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("%d"), CurrentStep);
-
-	//}
-
-	//	//SURROUNDING TILES THAT ARE FALSE WILL BE A WALL https://www.youtube.com/watch?v=wb6u2JImsyE
-	//}
-
-	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::C))
-	{
-		//CreateLevel(); // Clears the arrays and stuff
-		GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorLocation(PlayerStart);
 	}
 }
 
@@ -131,17 +110,12 @@ bool ADungeonDFSGen::ChangeDir(int percentage)
 
 void ADungeonDFSGen::RandomPointOnGrid()
 {
-	//CellX = FMath::RandHelper(GridWidth-1);
-	//CellY = FMath::RandHelper(GridHeight-1);
 	CellX = GridWidth / 2; // mid X
 	CellY = GridHeight / 2; // mid Y
 }
 
 void ADungeonDFSGen::DFSAlgorithm()
 {
-	//CurrentStep = (CellY * GridWidth) + CellX;
-	//dirTravelTime = FMath::RandRange(3, 5);
-
 	if (ChangeDir(15.0f) == true) // 10% chance
 		dir = 3;
 	else
@@ -187,7 +161,6 @@ void ADungeonDFSGen::DFSAlgorithm()
 			}
 			break;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("%d - %d - %d - %d"), dir, CurrentStep, CellX, CellY);
 	}
 	else
 	{
@@ -225,13 +198,6 @@ void ADungeonDFSGen::DFSAlgorithm()
 	}
 
 	Visited[CurrentStep] = true;
-	//CurrentStep = (CellY * GridWidth) + CellX;
-	//UE_LOG(LogTemp, Warning, TEXT("%d"), CurrentStep);
-
-	/*if (RoomCounter >= 10)
-	{
-		EndLocation = CurrentStep;
-	}*/
 }
 
 void ADungeonDFSGen::AddRoomToGrid()
@@ -260,14 +226,10 @@ void ADungeonDFSGen::AddRoomToGrid()
 		Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
 		RoomArray.Push(Room);
 
-		//CellArray.Push(CurrentStep);
-
 		TestStruct.CurrentCell = CurrentStep;
 		TestStruct.Direction.SetNum(4, true);
 		Testing.Add(TestStruct);
 
-		RoomArray[0]->GetActorLocation(); // for some reason there is a weird bug where if I remove this, the mesh wont spawn
-		//PlayerStart.Z += 100.0f;
 		GridLocation.Push(RoomLocation); // Store all the locations for wall use?
 	}
 
@@ -284,8 +246,12 @@ void ADungeonDFSGen::AddWallsToGrid()
 			WallLocation = FVector(GridLocation[CurrentWallCell].X, GridLocation[CurrentWallCell].Y - 1000, GridLocation[CurrentWallCell].Z);
 			WallLocation.Z += 400;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL);
+			FActorSpawnParameters SpawnInfo;
+			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
 			WallArray.Push(Wall);
+
 			Testing[i].Direction[0] = true;
 		}
 		if (Testing[i].Direction[1] == false) // East 
@@ -294,8 +260,12 @@ void ADungeonDFSGen::AddWallsToGrid()
 			WallLocation = FVector(GridLocation[CurrentWallCell].X + 1000, GridLocation[CurrentWallCell].Y, GridLocation[CurrentWallCell].Z);
 			WallLocation.Z += 400;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[1], &WallLocation, NULL);
+			FActorSpawnParameters SpawnInfo;
+			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
 			WallArray.Push(Wall);
+
 			Testing[i].Direction[1] = true;
 		}
 		if (Testing[i].Direction[2] == false) // South
@@ -304,8 +274,12 @@ void ADungeonDFSGen::AddWallsToGrid()
 			WallLocation = FVector(GridLocation[CurrentWallCell].X, GridLocation[CurrentWallCell].Y + 1000, GridLocation[CurrentWallCell].Z);
 			WallLocation.Z += 400;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[2], &WallLocation, NULL);
+			FActorSpawnParameters SpawnInfo;
+			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
 			WallArray.Push(Wall);
+
 			Testing[i].Direction[2] = true;
 		}
 		if (Testing[i].Direction[3] == false) // West
@@ -314,8 +288,12 @@ void ADungeonDFSGen::AddWallsToGrid()
 			WallLocation = FVector(GridLocation[CurrentWallCell].X - 1000, GridLocation[CurrentWallCell].Y, GridLocation[CurrentWallCell].Z);
 			WallLocation.Z += 400;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[3], &WallLocation, NULL);
+			FActorSpawnParameters SpawnInfo;
+			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
 			WallArray.Push(Wall);
+
 			Testing[i].Direction[3] = true;
 		}
 

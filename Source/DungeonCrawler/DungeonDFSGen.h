@@ -109,6 +109,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Level Walls")
 		TArray<AActor*> WallArray;
+	UPROPERTY(EditAnywhere, Category = "Level Walls")
+		TArray<TSubclassOf<class AChestGeneration>> ChestGen;
 private:
 	int EndLocation;
 
