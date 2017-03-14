@@ -24,4 +24,6 @@ public:
 		class UAIHealthComponent *HealthComponent;
 	UPROPERTY(EditAnywhere, Category = "Attack Component")
 		class UAIAttackComponent *AttackComponent;
+
+	void EnemyAttack();
 };

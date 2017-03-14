@@ -101,6 +101,17 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 		}
 
 	}
+
+	// Spawn player on first grid
+	if (RoomArray[0] != nullptr)
+	{
+		if (PlayerSpawned == false)
+		{
+			PlayerSpawned = true;
+			GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorLocation(FVector(RoomArray[0]->GetActorLocation().X, RoomArray[0]->GetActorLocation().Y, 450.0f));
+		}
+	}
+
 }
 
 bool ADungeonDFSGen::ChangeDir(int percentage)

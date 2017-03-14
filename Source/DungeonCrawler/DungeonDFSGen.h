@@ -145,4 +145,6 @@ private:
 	int CurrentWallCell = 0;
 
 	FVector WallLocation;
+
+	bool PlayerSpawned = false;
 };

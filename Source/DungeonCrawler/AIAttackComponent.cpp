@@ -34,3 +34,19 @@ void UAIAttackComponent::TickComponent( float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
+void UAIAttackComponent::EnemyAttack()
+{
+	switch (AttackType)
+	{
+	case EAttackType::AT_Melee:
+		UE_LOG(LogTemp, Warning, TEXT("Attacking player...MELEE"));
+		break;
+	case EAttackType::AT_Range:
+		UE_LOG(LogTemp, Warning, TEXT("Attacking player...RANGE"));
+		break;
+	case EAttackType::AT_Magic:
+		UE_LOG(LogTemp, Warning, TEXT("Attacking player...MAGIC"));
+		break;
+	}
+}
+

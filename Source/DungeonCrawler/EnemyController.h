@@ -34,17 +34,20 @@ public:
 	UFUNCTION()
 		void Roaming(float DeltaTime);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
-		class UAIPerceptionComponent *AIPerception;
-
 	UFUNCTION()
 		void PerceptionSenseUpdate(TArray<AActor*> testActors);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+		class UAIPerceptionComponent *AIPerception;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+		class UAISenseConfig_Sight *SightConfig;
 private:
 	//Behavior Tree Components
 	class UBehaviorTree *BehaviorTree;
 	class UBlackboardComponent *BlackboardComp;
 
 	class AEnemyCharacter *Enemy;
+	class ADungeonCrawlerCharacter *Player;
 
 	FVector RoamLocation;
 	FVector SpawnLocation;
@@ -53,7 +56,9 @@ private:
 	FName SelfActor_Key;
 	FName RoamLocation_Key;
 	FName EnemyState_Key;
+	FName Player_Key;
 
 	float IdleCounter = 0.0f;
 	bool FirstLocation = false;
+	bool PlayerSpotted = false;
 };

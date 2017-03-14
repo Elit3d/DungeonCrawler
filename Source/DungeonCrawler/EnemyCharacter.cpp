@@ -26,3 +26,8 @@ void AEnemyCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 }
+
+void AEnemyCharacter::EnemyAttack()
+{
+	AttackComponent->EnemyAttack();
+}
