@@ -22,7 +22,7 @@ void UItemManagerComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 

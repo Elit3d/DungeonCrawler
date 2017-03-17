@@ -33,6 +33,8 @@ void UCreateRoomComponent::BeginPlay()
 			ChanceOfRoom[i] = 5;
 		}
 	}
+
+
 }
 
 
@@ -65,5 +67,15 @@ int UCreateRoomComponent::GetWeightedRandom()
 		}
 	}
 	return 0;
+}
+
+int UCreateRoomComponent::GetTheme()
+{
+	return theme;
+}
+
+void UCreateRoomComponent::SetLevelTheme(int _theme)
+{
+	theme = _theme;
 }
 

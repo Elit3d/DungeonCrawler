@@ -66,15 +66,21 @@ void AEnemyController::Tick(float DeltaTime)
 	{
 		if (Enemy != nullptr)
 		{
+			AttackTimer += DeltaTime;
 			float Distance = Player->GetDistanceTo(Enemy);
 
-			if (Distance <= 250.0f && PlayerSpotted)
+			if (Distance <= 300.f && PlayerSpotted) // might want to change this based off who is attacking
 			{
-				//State = EAIState::ATTACK;
-				//Blackboard->SetValueAsEnum(EnemyState_Key, EAIState::ATTACK);
-				Enemy->EnemyAttack();
+				if (AttackTimer >= 3.0f) // might want to change this based off who is attacking
+				{
+					AttackTimer = 0.0f;
+					IsAttacking = true;
+					//State = EAIState::ATTACK;
+					//Blackboard->SetValueAsEnum(EnemyState_Key, EAIState::ATTACK);
+					Enemy->EnemyAttack();
+				}
 			}
-			UE_LOG(LogTemp, Warning, TEXT("%f"), Distance);
+			//UE_LOG(LogTemp, Warning, TEXT("%f"), Distance);
 		}
 	}
 }

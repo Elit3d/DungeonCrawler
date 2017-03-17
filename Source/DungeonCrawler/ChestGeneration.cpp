@@ -3,6 +3,8 @@
 #include "DungeonCrawler.h"
 #include "ChestGeneration.h"
 #include "ItemManagerComponent.h"
+#include "DungeonCrawlerCharacter.h"
+#include "Classes/GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
 AChestGeneration::AChestGeneration()
@@ -54,6 +56,7 @@ void AChestGeneration::Tick(float DeltaTime)
 
 	if (Collide)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Collided with chest"));
 		// If collided, and Interaction key pressed - Open chest
 		if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::F))
 		{
@@ -75,7 +78,20 @@ void AChestGeneration::Tick(float DeltaTime)
 				itemSpawnCounter++;
 				//Amount to spawn
 				if (itemSpawnCounter <= itemsToSpawn)
-					GetWorld()->SpawnActor<AActor>(ItemManager->ItemArray[0], FVector(SpawnArea->GetComponentLocation().X, SpawnArea->GetComponentLocation().Y, SpawnArea->GetComponentLocation().Z), FRotator(0.f, 0.f, 0.f));
+				{
+					AActor *Item = GetWorld()->SpawnActor<AActor>(ItemManager->ItemArray[0], FVector(SpawnArea->GetComponentLocation().X, SpawnArea->GetComponentLocation().Y, SpawnArea->GetComponentLocation().Z), FRotator(0.f, 0.f, 0.f));
+					ItemActorArray.Push(Item);
+					if (Item != nullptr)
+					{
+						UProjectileMovementComponent *ThrowItem = Cast<UProjectileMovementComponent>(Item->GetComponentByClass(UProjectileMovementComponent::StaticClass()));
+						if (ThrowItem != nullptr)
+						{
+							ThrowItem->Velocity.X += .2f;
+							ThrowItem->Velocity.Y += .2f;
+						}
+
+					}
+				}
 			}
 		}
 	}
@@ -86,11 +102,17 @@ void AChestGeneration::Tick(float DeltaTime)
 
 void AChestGeneration::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	Collide = true;
+	Character = Cast<ADungeonCrawlerCharacter>(OtherActor);
+
+	if(Character != nullptr)
+		Collide = true;
 }
 
 void AChestGeneration::OnOverlapEnd(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
 {
-	Collide = false;
+	Character = Cast<ADungeonCrawlerCharacter>(OtherActor);
+
+	if (Character != nullptr)
+		Collide = false;
 }
 

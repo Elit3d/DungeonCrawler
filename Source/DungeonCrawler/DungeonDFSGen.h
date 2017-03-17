@@ -111,6 +111,8 @@ public:
 		TArray<AActor*> WallArray;
 	UPROPERTY(EditAnywhere, Category = "Level Walls")
 		TArray<TSubclassOf<class AChestGeneration>> ChestGen;
+
+	void SetLevelTheme(int _theme);
 private:
 	int EndLocation;
 

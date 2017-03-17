@@ -23,5 +23,4 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Items)
 		TArray<TSubclassOf<AActor>> ItemArray; // base item class with components (bit of inheritance)
-	
 };

@@ -30,6 +30,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<EAIState> State;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+		bool IsAttacking = false;
 
 	UFUNCTION()
 		void Roaming(float DeltaTime);
@@ -61,4 +63,6 @@ private:
 	float IdleCounter = 0.0f;
 	bool FirstLocation = false;
 	bool PlayerSpotted = false;
+
+	float AttackTimer = 0.0f;
 };

@@ -53,10 +53,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = Chest)
 		float InterpSpeed = 100.f;
 private:
+	class ADungeonCrawlerCharacter *Character;
+
 	int itemSpawnCounter = 0; // Counter to decide how many items to spawn
 	int itemsToSpawn = 0; // Amount of items to spawn 
 	int RandItemToSpawn = 0; // Chose an item to spawn from the array
 
 	bool Collide = false; // Is collided
 	bool Open = false; // Is chest open
+
+
+	TArray<AActor*> ItemActorArray;
 };

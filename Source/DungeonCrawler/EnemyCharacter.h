@@ -26,4 +26,6 @@ public:
 		class UAIAttackComponent *AttackComponent;
 
 	void EnemyAttack();
+
+private:
 };

@@ -105,7 +105,7 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 	// Spawn player on first grid
 	if (RoomArray[0] != nullptr)
 	{
-		if (PlayerSpawned == false)
+		if (PlayerSpawned == false && GetWorld()->GetFirstPlayerController()->GetPawn() != nullptr)
 		{
 			PlayerSpawned = true;
 			GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorLocation(FVector(RoomArray[0]->GetActorLocation().X, RoomArray[0]->GetActorLocation().Y, 450.0f));
@@ -117,6 +117,11 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 bool ADungeonDFSGen::ChangeDir(int percentage)
 {
 	return (FMath::RandRange(1, 100 / percentage) == 1 ? true : false);
+}
+
+void ADungeonDFSGen::SetLevelTheme(int _theme)
+{
+	RoomComponent->SetLevelTheme(_theme);
 }
 
 void ADungeonDFSGen::RandomPointOnGrid()
@@ -234,8 +239,29 @@ void ADungeonDFSGen::AddRoomToGrid()
 
 	if (RoomComponent->Rooms[RoomComponent->GetWeightedRandom()] != nullptr)
 	{
-		Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
-		RoomArray.Push(Room);
+		if (RoomComponent->GetTheme() < 4)
+		{
+			switch (RoomComponent->GetTheme())
+			{
+			case 0:
+				UE_LOG(LogTemp, Warning, TEXT("NORMAL THEME"));
+				Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
+				break;
+			case 1:
+				UE_LOG(LogTemp, Warning, TEXT("JUNGLE THEME"));
+				Room = GetWorld()->SpawnActor(RoomComponent->JungleRooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
+				break;
+			case 2:
+				UE_LOG(LogTemp, Warning, TEXT("DESERT THEME"));
+				Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
+				break;
+			case 3:
+				UE_LOG(LogTemp, Warning, TEXT("HELL THEME"));
+				Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
+				break;
+			}
+			RoomArray.Push(Room);
+		}
 
 		TestStruct.CurrentCell = CurrentStep;
 		TestStruct.Direction.SetNum(4, true);
@@ -315,9 +341,9 @@ void ADungeonDFSGen::AddWallsToGrid()
 void ADungeonDFSGen::CreateLevel()
 {
 	Visited.Empty(); // Clear the Array
-	Border.Empty();
+	Border.Empty(); // Clear the Array
 	Testing.Empty(); // Clear the Array
-	GridLocation.Empty();
+	GridLocation.Empty(); // Clear the Array
 
 	for (int i = 0; i < RoomArray.Num(); i++)
 	{
@@ -340,8 +366,16 @@ void ADungeonDFSGen::CreateLevel()
 	}
 	WallArray.Empty();
 
+	for (int i = 0; i < EnemyArray.Num(); i++)
+	{
+		if (EnemyArray[i] != nullptr)
+			EnemyArray[i]->Destroy();
+	}
+	EnemyArray.Empty();
+
 	RoomCounter = 0;
 	CurrentWallCell = 0;
+	PlayerSpawned = false;
 
 	RandomPointOnGrid();
 
