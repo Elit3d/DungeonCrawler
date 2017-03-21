@@ -5,6 +5,8 @@
 
 #include "AIHealthComponent.h"
 #include "AIAttackComponent.h"
+
+#include "DungeonCrawlerCharacter.h"
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
 {
@@ -25,9 +27,58 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+
+	EnemyAttack();
+
+	if (GetHealth() <= 0)
+	{
+		Destroy();
+	}
 }
 
 void AEnemyCharacter::EnemyAttack()
 {
-	AttackComponent->EnemyAttack();
+	//AttackComponent->EnemyAttack();
+
+	Player = Cast<ADungeonCrawlerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	switch (AttackComponent->AttackType)
+	{
+	case EAttackType::AT_Melee:
+		UE_LOG(LogTemp, Warning, TEXT("Attacking player...MELEE"));
+
+		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 250.0f, this, Player))
+		{
+			//HIT TAKE DAMAGE
+			//HealthComponent->SetHealth(HealthComponent->GetHealth() - 1); -- NOT THIS AS IT IS THE ENEMIES HEALTH AND NOT THE PLAYERS
+		}
+		break;
+	case EAttackType::AT_Range:
+		UE_LOG(LogTemp, Warning, TEXT("Attacking player...RANGE"));
+
+		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
+		{
+			//HIT TAKE DAMAGE
+			//Spawn projectile (dont deal direct damage here)
+			//HealthComponent->SetHealth(HealthComponent->GetHealth() - 1); -- NOT THIS AS IT IS THE ENEMIES HEALTH AND NOT THE PLAYERS
+		}
+		break;
+	case EAttackType::AT_Magic:
+		UE_LOG(LogTemp, Warning, TEXT("Attacking player...MAGIC"));
+
+		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
+		{
+		}
+		break;
+	}
+}
+
+float AEnemyCharacter::GetHealth()
+{
+	return HealthComponent->GetHealth();
+}
+
+void AEnemyCharacter::SetHealth(float _health)
+{
+	HealthComponent->SetHealth(_health);
 }

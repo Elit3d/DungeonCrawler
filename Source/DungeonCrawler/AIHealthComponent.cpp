@@ -34,12 +34,12 @@ void UAIHealthComponent::TickComponent( float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
-int UAIHealthComponent::GetHealth()
+float UAIHealthComponent::GetHealth()
 {
 	return health;
 }
 
-void UAIHealthComponent::SetHealth(int _health)
+void UAIHealthComponent::SetHealth(float _health)
 {
 	health = _health;
 }

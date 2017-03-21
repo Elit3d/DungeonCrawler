@@ -132,6 +132,16 @@ void ADungeonCrawlerCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ADungeonCrawlerCharacter::LookUpAtRate);
 }
 
+void ADungeonCrawlerCharacter::SetHealth(int _Health)
+{
+	Health = _Health;
+}
+
+void ADungeonCrawlerCharacter::DamagePlayer(int _Damage)
+{
+	_Damage -= Health;
+}
+
 void ADungeonCrawlerCharacter::OnFire()
 {
 	// try and fire a projectile

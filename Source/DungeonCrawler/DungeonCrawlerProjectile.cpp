@@ -4,6 +4,8 @@
 #include "DungeonCrawlerProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
+#include "EnemyCharacter.h"
+
 ADungeonCrawlerProjectile::ADungeonCrawlerProjectile() 
 {
 	// Use a sphere as a simple collision representation
@@ -33,11 +35,20 @@ ADungeonCrawlerProjectile::ADungeonCrawlerProjectile()
 
 void ADungeonCrawlerProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	Enemy = Cast<AEnemyCharacter>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 		Destroy();
+	}
+
+	if (Enemy != nullptr)
+	{
+		Destroy();
+
+		Enemy->SetHealth(Enemy->GetHealth() - 1);
+		//when we spawn enemies + 1 to an int, when we kill -1 this int and then spawn the portal based off this
 	}
 }

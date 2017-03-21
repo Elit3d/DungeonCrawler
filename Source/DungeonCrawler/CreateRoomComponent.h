@@ -34,6 +34,8 @@ public:
 		int Y = 0;
 	UPROPERTY(EditAnywhere, Category = "Room Properties")
 		int NumberOfRooms = 20;
+	UPROPERTY(EditAnywhere, Category = "Wall Mesh")
+		TArray<TSubclassOf<class AActor>> Walls;
 	UPROPERTY(EditAnywhere, Category = "Static Room Mesh")
 		TArray<TSubclassOf<class AActor>> Rooms;
 	UPROPERTY(EditAnywhere, Category = "Static Room Mesh")

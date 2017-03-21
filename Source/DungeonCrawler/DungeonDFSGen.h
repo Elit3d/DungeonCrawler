@@ -50,6 +50,7 @@ public:
 
 	void AddRoomToGrid();
 	void AddWallsToGrid();
+	void WallProperties(int X, int Y);
 
 	UFUNCTION(BlueprintCallable, Category = "Dungeon Level Creation")
 		void CreateLevel(); // Clears off values to create a new level
@@ -149,4 +150,8 @@ private:
 	FVector WallLocation;
 
 	bool PlayerSpawned = false;
+
+	TArray<AActor*> FoundEnemyActors;
+	bool bTeleportSpawned = false;
+	AActor *TeleportActor;
 };

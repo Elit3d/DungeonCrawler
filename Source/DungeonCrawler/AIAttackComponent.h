@@ -28,7 +28,9 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
+	bool RayCastAttack(FVector Start, FVector End, AActor* IgnoreActor, AActor* Actor);
 	void EnemyAttack();
+	void SpawnProjectile(); // Magic or range
 
 	UPROPERTY(EditAnywhere)
 		EAttackType AttackType;

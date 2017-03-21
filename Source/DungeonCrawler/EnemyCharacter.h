@@ -27,5 +27,8 @@ public:
 
 	void EnemyAttack();
 
+	float GetHealth();
+	void SetHealth(float _health);
 private:
+	class ADungeonCrawlerCharacter *Player;
 };

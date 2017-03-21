@@ -41,6 +41,7 @@ class ADungeonCrawlerCharacter : public ACharacter
 	/** Motion controller (left hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UMotionControllerComponent* L_MotionController;
+
 public:
 	ADungeonCrawlerCharacter();
 
@@ -49,6 +50,9 @@ public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		int Health = 100;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -74,6 +78,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	uint32 bUsingMotionControllers : 1;
 
+	UFUNCTION(BlueprintCallable, Category = "Player Health")
+		FORCEINLINE int GetHealth() { return Health; }
+	UFUNCTION(BlueprintCallable, Category = "Player Health")
+		void SetHealth(int _Health);
+	UFUNCTION(BlueprintCallable, Category = "Player Health")
+		void DamagePlayer(int _Damage);
 protected:
 	
 	/** Fires a projectile. */

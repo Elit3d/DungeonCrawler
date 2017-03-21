@@ -21,10 +21,10 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 	UPROPERTY(EditAnywhere)
-		int health;
+		float health;
 	UFUNCTION(BlueprintCallable, Category = Health)
-		int GetHealth();
+		float GetHealth();
 	UFUNCTION(BlueprintCallable, Category = Health)
-		void SetHealth(int _health);
+		void SetHealth(float _health);
 private:
 };

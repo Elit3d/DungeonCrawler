@@ -5,6 +5,7 @@
 
 #include "CreateRoomComponent.h"
 #include "Engine.h"
+#include "EnemyCharacter.h"
 
 // Sets default values
 ADungeonDFSGen::ADungeonDFSGen()
@@ -68,12 +69,28 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 
 				if (ActorArray[5] != nullptr)
 				{
-						Enemy = GetWorld()->SpawnActor(ActorArray[5], &RoomLocation, NULL);
-						EnemyArray.Push(Enemy);
+					Enemy = GetWorld()->SpawnActor(ActorArray[5], &RoomLocation, NULL);
+					EnemyArray.Push(Enemy);
 				}
 			}
 
 			AddWallsToGrid();
+
+			// Spawn portal after all enemies are gone
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyCharacter::StaticClass(), FoundEnemyActors);
+			UE_LOG(LogTemp, Warning, TEXT("Enemies left - %d"), FoundEnemyActors.Num());
+
+			if (FoundEnemyActors.Num() <= 6)
+			{
+				if (bTeleportSpawned == false)
+				{
+					bTeleportSpawned = true;
+					FVector Location = FVector(0, 0, 0);
+
+					if (ActorArray[6] != nullptr)
+						TeleportActor = GetWorld()->SpawnActor(ActorArray[6], &Location, NULL);
+				}
+			}
 		}
 	}
 
@@ -111,7 +128,6 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 			GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorLocation(FVector(RoomArray[0]->GetActorLocation().X, RoomArray[0]->GetActorLocation().Y, 450.0f));
 		}
 	}
-
 }
 
 bool ADungeonDFSGen::ChangeDir(int percentage)
@@ -280,56 +296,64 @@ void ADungeonDFSGen::AddWallsToGrid()
 		if(Testing[i].Direction[0] == false) // North
 		{
 			//push back wall just like the floor
-			WallLocation = FVector(GridLocation[CurrentWallCell].X, GridLocation[CurrentWallCell].Y - 1000, GridLocation[CurrentWallCell].Z);
-			WallLocation.Z += 400;
+			//WallLocation = FVector(GridLocation[CurrentWallCell].X, GridLocation[CurrentWallCell].Y - 1000, GridLocation[CurrentWallCell].Z);
+			//WallLocation.Z += 400;
 
-			FActorSpawnParameters SpawnInfo;
+			//FActorSpawnParameters SpawnInfo;
 			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
-			WallArray.Push(Wall);
+			//Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL);
+			//WallArray.Push(Wall);
+
+			WallProperties(0, -1000);
 
 			Testing[i].Direction[0] = true;
 		}
 		if (Testing[i].Direction[1] == false) // East 
 		{
 			//push back wall just like the floor
-			WallLocation = FVector(GridLocation[CurrentWallCell].X + 1000, GridLocation[CurrentWallCell].Y, GridLocation[CurrentWallCell].Z);
-			WallLocation.Z += 400;
+			//WallLocation = FVector(GridLocation[CurrentWallCell].X + 1000, GridLocation[CurrentWallCell].Y, GridLocation[CurrentWallCell].Z);
+			//WallLocation.Z += 400;
 
-			FActorSpawnParameters SpawnInfo;
+			//FActorSpawnParameters SpawnInfo;
 			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
-			WallArray.Push(Wall);
+			//Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
+			//WallArray.Push(Wall);
+
+			WallProperties(1000, 0);
 
 			Testing[i].Direction[1] = true;
 		}
 		if (Testing[i].Direction[2] == false) // South
 		{
 			//push back wall just like the floor
-			WallLocation = FVector(GridLocation[CurrentWallCell].X, GridLocation[CurrentWallCell].Y + 1000, GridLocation[CurrentWallCell].Z);
-			WallLocation.Z += 400;
+			//WallLocation = FVector(GridLocation[CurrentWallCell].X, GridLocation[CurrentWallCell].Y + 1000, GridLocation[CurrentWallCell].Z);
+			//WallLocation.Z += 400;
 
-			FActorSpawnParameters SpawnInfo;
+			//FActorSpawnParameters SpawnInfo;
 			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
-			WallArray.Push(Wall);
+			//Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
+			//WallArray.Push(Wall);
+
+			WallProperties(0, 1000);
 
 			Testing[i].Direction[2] = true;
 		}
 		if (Testing[i].Direction[3] == false) // West
 		{
 			//push back wall just like the floor
-			WallLocation = FVector(GridLocation[CurrentWallCell].X - 1000, GridLocation[CurrentWallCell].Y, GridLocation[CurrentWallCell].Z);
-			WallLocation.Z += 400;
+			//WallLocation = FVector(GridLocation[CurrentWallCell].X - 1000, GridLocation[CurrentWallCell].Y, GridLocation[CurrentWallCell].Z);
+			//WallLocation.Z += 400;
 
-			FActorSpawnParameters SpawnInfo;
+			//FActorSpawnParameters SpawnInfo;
 			//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-			Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
-			WallArray.Push(Wall);
+			//Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL, SpawnInfo);
+			//WallArray.Push(Wall);
+
+			WallProperties(-1000, 0);
 
 			Testing[i].Direction[3] = true;
 		}
@@ -338,12 +362,53 @@ void ADungeonDFSGen::AddWallsToGrid()
 	}
 }
 
+void ADungeonDFSGen::WallProperties(int X, int Y)
+{
+	//push back wall just like the floor
+	WallLocation = FVector(GridLocation[CurrentWallCell].X + X, GridLocation[CurrentWallCell].Y + Y, GridLocation[CurrentWallCell].Z);
+	WallLocation.Z += 400;
+
+	if (RoomComponent->GetTheme() < 4)
+	{
+		switch (RoomComponent->GetTheme())
+		{
+		case 0:
+			UE_LOG(LogTemp, Warning, TEXT("NORMAL THEME"));
+			if (RoomComponent->Walls[0] != nullptr)
+				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[0], &WallLocation, NULL);
+			break;
+		case 1:
+			UE_LOG(LogTemp, Warning, TEXT("JUNGLE THEME"));
+			if (RoomComponent->Walls[1] != nullptr)
+				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[1], &WallLocation, NULL);
+			break;
+		case 2:
+			UE_LOG(LogTemp, Warning, TEXT("DESERT THEME"));
+			if (RoomComponent->Walls[2] != nullptr)
+				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[2], &WallLocation, NULL);
+			break;
+		case 3:
+			UE_LOG(LogTemp, Warning, TEXT("HELL THEME"));
+			if (RoomComponent->Walls[3] != nullptr)
+				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[3], &WallLocation, NULL);
+			break;
+		}
+		WallArray.Push(Wall);
+	}
+
+	//Wall = GetWorld()->SpawnActor(ActorArray[0], &WallLocation, NULL);
+	//WallArray.Push(Wall);
+}
+
 void ADungeonDFSGen::CreateLevel()
 {
 	Visited.Empty(); // Clear the Array
 	Border.Empty(); // Clear the Array
 	Testing.Empty(); // Clear the Array
 	GridLocation.Empty(); // Clear the Array
+
+	if(TeleportActor != nullptr)
+		TeleportActor->Destroy();
 
 	for (int i = 0; i < RoomArray.Num(); i++)
 	{
