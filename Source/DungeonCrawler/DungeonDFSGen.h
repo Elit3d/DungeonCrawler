@@ -63,16 +63,16 @@ public:
 		int32 GridWidth;
 	UPROPERTY(EditAnywhere, Category = "Level Properties")
 		int32 GridHeight;
-	UPROPERTY(EditAnywhere, Category = "Level Properties")
-		int NumberOfRooms = 10; // how many steps to take
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Properties")
+		float NumberOfRooms = 10; // how many steps to take
 	UPROPERTY(EditAnywhere, Category = "Level Properties")
 		int StartLocation; // Starting Grid Point
 
+	// Components
 	UPROPERTY(EditAnywhere, Category = "Room Component")
 		class UCreateRoomComponent *RoomComponent;
-
-	// 2d grid stored as 1d array
-	//TArray< TWeakObjectPtr<AActor> > LevelGrid;
+	UPROPERTY(EditAnywhere, Category = "Enemy Component")
+		class UEnemySpawnerComponent *EnemyComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Actors)
 		TArray< TSubclassOf<class AActor> > ActorArray;
@@ -112,8 +112,13 @@ public:
 		TArray<AActor*> WallArray;
 	UPROPERTY(EditAnywhere, Category = "Level Walls")
 		TArray<TSubclassOf<class AChestGeneration>> ChestGen;
+	UPROPERTY(EditAnywhere, Category = "Enemy Array")
+		TArray<AActor*> EnemyArray;
 
 	void SetLevelTheme(int _theme);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float RoomCounter = 0;
 private:
 	int EndLocation;
 
@@ -121,7 +126,6 @@ private:
 	int32 CellY;
 
 	int CurrentStep = 0;
-	int RoomCounter = 0;
 
 	float timer = 0.0f;
 	int32 dir;
@@ -134,7 +138,6 @@ private:
 	AActor *Wall;
 	AActor *Enemy;
 	TArray<AActor*> ChestArray;
-	TArray<AActor*> EnemyArray;
 	EDirectionCheck DirectionCheck;
 	int Sum = 0;
 
@@ -154,4 +157,6 @@ private:
 	TArray<AActor*> FoundEnemyActors;
 	bool bTeleportSpawned = false;
 	AActor *TeleportActor;
+	FVector TeleportLocation;
+	UNavigationSystem* NavSys;
 };

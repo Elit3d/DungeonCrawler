@@ -25,6 +25,7 @@ public:
 	UFUNCTION()
 		void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	void ClearItems();
 
 	UPROPERTY(EditAnywhere)
 		USceneComponent *Root;

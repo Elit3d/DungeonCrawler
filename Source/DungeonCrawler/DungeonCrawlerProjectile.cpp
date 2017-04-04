@@ -37,9 +37,9 @@ void ADungeonCrawlerProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 {
 	Enemy = Cast<AEnemyCharacter>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)/* && OtherComp->IsSimulatingPhysics()*/)
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 		Destroy();
 	}

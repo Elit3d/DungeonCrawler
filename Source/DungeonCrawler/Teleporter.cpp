@@ -46,6 +46,8 @@ void ATeleporter::Tick( float DeltaTime )
 				if (MyActor != nullptr)
 				{
 					MyActor->CreateLevel();
+					int Theme = FMath::RandHelper(4);
+					MyActor->SetLevelTheme(Theme);
 				}
 			}
 		}

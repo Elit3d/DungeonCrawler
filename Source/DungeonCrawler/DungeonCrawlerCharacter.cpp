@@ -7,6 +7,7 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
+#include "PlayerRaycastComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -78,6 +79,7 @@ ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+	RaycastComponent = CreateDefaultSubobject<UPlayerRaycastComponent>(TEXT("RaycastComponent"));
 }
 
 void ADungeonCrawlerCharacter::BeginPlay()
@@ -99,6 +101,26 @@ void ADungeonCrawlerCharacter::BeginPlay()
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
 	}
+}
+
+void ADungeonCrawlerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (Health <= 0)
+	{
+		GetWorld()->GetFirstPlayerController()->RestartLevel();
+	}
+
+	FVector DropLocation = GetCapsuleComponent()->GetForwardVector() + 30.0f;
+
+	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::Q))
+	{
+		AActor *Gun = GetWorld()->SpawnActor(CurrentGun, &DropLocation, NULL);
+		FP_Gun->SetHiddenInGame(true, true);
+	}
+
+	RaycastComponent->PlayerRaycast(FirstPersonCameraComponent->GetComponentLocation(), FirstPersonCameraComponent->GetComponentLocation() + FirstPersonCameraComponent->GetForwardVector() * 300.0f, this);
 }
 
 //////////////////////////////////////////////////////////////////////////

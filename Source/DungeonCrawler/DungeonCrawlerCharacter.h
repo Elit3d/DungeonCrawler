@@ -46,6 +46,7 @@ public:
 	ADungeonCrawlerCharacter();
 
 	virtual void BeginPlay();
+	virtual void Tick(float DeltaTime);
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -142,5 +143,9 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> CurrentGun;
+
+	class UPlayerRaycastComponent *RaycastComponent;
 };
 

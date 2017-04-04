@@ -26,9 +26,27 @@ public:
 		class UAIAttackComponent *AttackComponent;
 
 	void EnemyAttack();
+	void EnemySummon();
 
-	float GetHealth();
+	UFUNCTION(BlueprintCallable, Category="Health")
+		float GetHealth();
 	void SetHealth(float _health);
+
+	void HandleSummoning();
+	UFUNCTION(BlueprintCallable, Category=Summon)
+		void SummonSpawning(); // To call in anim BP only
+
+	UPROPERTY(EditAnywhere, Category = "Summoning")
+		bool bEnemyCanSummon = false;
+	UPROPERTY(BlueprintReadWrite)
+		bool bSummonOtherEnemy = false;
+	UPROPERTY(EditAnywhere, Category = "Summoning")
+		int MaxSummon = 0;
+	UPROPERTY(EditAnywhere, Category = "Summoning")
+	TSubclassOf<	AEnemyCharacter> ThisCharacter;
+
+	float counter = 0;
 private:
 	class ADungeonCrawlerCharacter *Player;
+	TArray<AActor*> SummonedArray;
 };

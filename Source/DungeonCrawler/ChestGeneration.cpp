@@ -56,7 +56,7 @@ void AChestGeneration::Tick(float DeltaTime)
 
 	if (Collide)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Collided with chest"));
+		//UE_LOG(LogTemp, Warning, TEXT("Collided with chest"));
 		// If collided, and Interaction key pressed - Open chest
 		if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::F))
 		{
@@ -77,20 +77,29 @@ void AChestGeneration::Tick(float DeltaTime)
 			{
 				itemSpawnCounter++;
 				//Amount to spawn
+
 				if (itemSpawnCounter <= itemsToSpawn)
 				{
-					AActor *Item = GetWorld()->SpawnActor<AActor>(ItemManager->ItemArray[0], FVector(SpawnArea->GetComponentLocation().X, SpawnArea->GetComponentLocation().Y, SpawnArea->GetComponentLocation().Z), FRotator(0.f, 0.f, 0.f));
+					int randrange = FMath::RandHelper(ItemManager->ItemArray.Num());
+
+					FVector SpawnRandomLocation;
+					SpawnRandomLocation.X = FMath::RandRange(SpawnArea->GetComponentLocation().X - SpawnArea->GetScaledBoxExtent().X,SpawnArea->GetComponentLocation().X + SpawnArea->GetScaledBoxExtent().X);
+					SpawnRandomLocation.Y = FMath::RandRange(SpawnArea->GetComponentLocation().Y - SpawnArea->GetScaledBoxExtent().Y, SpawnArea->GetComponentLocation().Y + SpawnArea->GetScaledBoxExtent().Y);
+					SpawnRandomLocation.Z = SpawnArea->GetComponentLocation().Z;
+					AActor *Item = GetWorld()->SpawnActor<AActor>(ItemManager->ItemArray[randrange], SpawnRandomLocation, FRotator(0.f, 0.f, 0.f));
 					ItemActorArray.Push(Item);
-					if (Item != nullptr)
+
+					/*if (Item != nullptr)
 					{
 						UProjectileMovementComponent *ThrowItem = Cast<UProjectileMovementComponent>(Item->GetComponentByClass(UProjectileMovementComponent::StaticClass()));
+						
 						if (ThrowItem != nullptr)
 						{
-							ThrowItem->Velocity.X += .2f;
+							ThrowItem->Velocity.X += .1521f;
 							ThrowItem->Velocity.Y += .2f;
 						}
 
-					}
+					}*/
 				}
 			}
 		}
@@ -114,5 +123,17 @@ void AChestGeneration::OnOverlapEnd(UPrimitiveComponent * OverlappedComp, AActor
 
 	if (Character != nullptr)
 		Collide = false;
+}
+
+void AChestGeneration::ClearItems()
+{
+	for (size_t i = 0; i < ItemActorArray.Num(); i++)
+	{
+		if (ItemActorArray[i] != nullptr)
+		{
+			ItemActorArray[i]->Destroy();
+		}
+		ItemActorArray.Empty();
+	}
 }
 

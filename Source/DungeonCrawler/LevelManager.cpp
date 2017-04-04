@@ -33,9 +33,9 @@ void ALevelManager::Tick( float DeltaTime )
 		{
 			if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::E)) // check that all enemies are dead
 			{
-				DFS_Gen->CreateLevel();
 				int Theme = FMath::RandHelper(4); // 4 different themes to chose from
 				DFS_Gen->SetLevelTheme(Theme);
+				DFS_Gen->CreateLevel();
 			}
 		}
 	}

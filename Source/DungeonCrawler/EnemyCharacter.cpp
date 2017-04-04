@@ -28,11 +28,15 @@ void AEnemyCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-	EnemyAttack();
+	counter += DeltaTime;
+
+	//UE_LOG(LogTemp, Warning, TEXT("%f timer"), counter);
+
+	//EnemyAttack();
 
 	if (GetHealth() <= 0)
 	{
-		Destroy();
+		//Destroy();
 	}
 }
 
@@ -45,7 +49,7 @@ void AEnemyCharacter::EnemyAttack()
 	switch (AttackComponent->AttackType)
 	{
 	case EAttackType::AT_Melee:
-		UE_LOG(LogTemp, Warning, TEXT("Attacking player...MELEE"));
+		//UE_LOG(LogTemp, Warning, TEXT("Attacking player...MELEE"));
 
 		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 250.0f, this, Player))
 		{
@@ -54,7 +58,7 @@ void AEnemyCharacter::EnemyAttack()
 		}
 		break;
 	case EAttackType::AT_Range:
-		UE_LOG(LogTemp, Warning, TEXT("Attacking player...RANGE"));
+		//UE_LOG(LogTemp, Warning, TEXT("Attacking player...RANGE"));
 
 		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
 		{
@@ -64,12 +68,22 @@ void AEnemyCharacter::EnemyAttack()
 		}
 		break;
 	case EAttackType::AT_Magic:
-		UE_LOG(LogTemp, Warning, TEXT("Attacking player...MAGIC"));
+		//UE_LOG(LogTemp, Warning, TEXT("Attacking player...MAGIC"));
 
 		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
 		{
 		}
 		break;
+	}
+}
+
+void AEnemyCharacter::EnemySummon()
+{
+	// Handles summoning
+	if (counter >= 5.0f)
+	{
+		HandleSummoning();
+		counter = 0;
 	}
 }
 
@@ -82,3 +96,20 @@ void AEnemyCharacter::SetHealth(float _health)
 {
 	HealthComponent->SetHealth(_health);
 }
+
+void AEnemyCharacter::HandleSummoning()
+{
+	if (bEnemyCanSummon)
+	{
+		bSummonOtherEnemy = true;
+	}
+}
+
+void AEnemyCharacter::SummonSpawning()
+{
+	FVector SummonLocation = GetActorLocation();
+	FRotator SummonRotation = GetActorForwardVector().Rotation();
+	AActor *Summon = GetWorld()->SpawnActor(ThisCharacter, &SummonLocation, &SummonRotation);
+	SummonedArray.Push(Summon);
+}
+
