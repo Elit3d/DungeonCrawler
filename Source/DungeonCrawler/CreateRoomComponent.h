@@ -39,6 +39,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Static Room Mesh")
 		TArray<TSubclassOf<class AActor>> Rooms;
 	UPROPERTY(EditAnywhere, Category = "Static Room Mesh")
+		TArray<TSubclassOf<class AActor>> SandRooms;
+	UPROPERTY(EditAnywhere, Category = "Static Room Mesh")
 		TArray<TSubclassOf<class AActor>> JungleRooms;
 	UPROPERTY(EditAnywhere, Category = "Random Room Chance")
 		TArray<int32> ChanceOfRoom; // Gives us a value of the room being spawned

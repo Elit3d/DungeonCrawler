@@ -69,7 +69,7 @@ void AEnemyController::Tick(float DeltaTime)
 			AttackTimer += DeltaTime;
 			float Distance = Player->GetDistanceTo(Enemy);
 
-			if (Distance <= 300.f && PlayerSpotted && Enemy->AttackComponent->) // might want to change this based off who is attacking
+			if (Distance <= 300.f && PlayerSpotted /*&& Enemy->AttackComponent->*/) // might want to change this based off who is attacking
 			{
 				if (AttackTimer >= 3.0f) // might want to change this based off who is attacking
 				{

@@ -45,8 +45,10 @@ void ATeleporter::Tick( float DeltaTime )
 
 				if (MyActor != nullptr)
 				{
+					UGameplayStatics::OpenLevel(GetWorld(), "Dungeon1"); // Reload level so we can show the loading bar again
 					MyActor->CreateLevel();
 					int Theme = FMath::RandHelper(4);
+					UE_LOG(LogTemp, Warning, TEXT("theme that we are going to is %d"), Theme);
 					MyActor->SetLevelTheme(Theme);
 				}
 			}

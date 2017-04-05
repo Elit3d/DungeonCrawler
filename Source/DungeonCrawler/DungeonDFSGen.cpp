@@ -271,7 +271,7 @@ void ADungeonDFSGen::AddRoomToGrid()
 				break;
 			case 2:
 				UE_LOG(LogTemp, Warning, TEXT("DESERT THEME"));
-				Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
+				Room = GetWorld()->SpawnActor(RoomComponent->SandRooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
 				break;
 			case 3:
 				UE_LOG(LogTemp, Warning, TEXT("HELL THEME"));
@@ -429,7 +429,11 @@ void ADungeonDFSGen::CreateLevel()
 		Border[GridWidth*GridHeight - GridWidth + i] = true; // Bottom border
 	}
 
-	maxChestSpawn = FMath::RandRange(5, 10);
+	maxChestSpawn = FMath::RandRange(3, 5);
+
+	// Pick theme
+	int Theme = FMath::RandHelper(4);
+	SetLevelTheme(Theme);
 }
 
 bool ADungeonDFSGen::CanMoveCheck()
