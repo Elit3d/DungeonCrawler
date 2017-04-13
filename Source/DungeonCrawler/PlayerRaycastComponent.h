@@ -23,4 +23,7 @@ public:
 
 		
 	void PlayerRaycast(FVector Start, FVector End, AActor *Ignore);
+
+	class ADungeonCrawlerCharacter *Character;
+private:
 };

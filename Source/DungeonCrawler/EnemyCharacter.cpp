@@ -50,7 +50,7 @@ void AEnemyCharacter::EnemyAttack()
 	{
 	case EAttackType::AT_Melee:
 		//UE_LOG(LogTemp, Warning, TEXT("Attacking player...MELEE"));
-
+		//t = 0;
 		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 250.0f, this, Player))
 		{
 			//HIT TAKE DAMAGE
@@ -58,7 +58,11 @@ void AEnemyCharacter::EnemyAttack()
 		}
 		break;
 	case EAttackType::AT_Range:
-		//UE_LOG(LogTemp, Warning, TEXT("Attacking player...RANGE"));
+			EnemyLocation = GetActorLocation();
+			ForwardSpawn = GetActorForwardVector().Rotation();
+
+			if (RangeProjectile != nullptr)
+				GetWorld()->SpawnActor(RangeProjectile, &EnemyLocation, &ForwardSpawn);
 
 		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
 		{
@@ -69,7 +73,7 @@ void AEnemyCharacter::EnemyAttack()
 		break;
 	case EAttackType::AT_Magic:
 		//UE_LOG(LogTemp, Warning, TEXT("Attacking player...MAGIC"));
-
+		//t = 2;
 		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
 		{
 		}
@@ -85,6 +89,11 @@ void AEnemyCharacter::EnemySummon()
 		HandleSummoning();
 		counter = 0;
 	}
+}
+
+void AEnemyCharacter::EnemyRangeAttack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("FIRE BOMB"));
 }
 
 float AEnemyCharacter::GetHealth()
@@ -112,4 +121,3 @@ void AEnemyCharacter::SummonSpawning()
 	AActor *Summon = GetWorld()->SpawnActor(ThisCharacter, &SummonLocation, &SummonRotation);
 	SummonedArray.Push(Summon);
 }
-

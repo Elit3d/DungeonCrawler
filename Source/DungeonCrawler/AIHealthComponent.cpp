@@ -41,6 +41,7 @@ float UAIHealthComponent::GetHealth()
 
 void UAIHealthComponent::SetHealth(float _health)
 {
+	LastHealth = health + 1;
 	health = _health;
 }
 

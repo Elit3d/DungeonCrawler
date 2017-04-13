@@ -11,6 +11,7 @@ ADungeonCrawlerProjectile::ADungeonCrawlerProjectile()
 	// Use a sphere as a simple collision representation
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
+	CollisionComp->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	CollisionComp->OnComponentHit.AddDynamic(this, &ADungeonCrawlerProjectile::OnHit);		// set up a notification for when this component hits something blocking
 
@@ -30,25 +31,25 @@ ADungeonCrawlerProjectile::ADungeonCrawlerProjectile()
 	ProjectileMovement->bShouldBounce = true;
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	//InitialLifeSpan = 3.0f;
 }
 
 void ADungeonCrawlerProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Enemy = Cast<AEnemyCharacter>(OtherActor);
-	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)/* && OtherComp->IsSimulatingPhysics()*/)
-	{
-		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+	//Enemy = Cast<AEnemyCharacter>(OtherActor);
+	//// Only add impulse and destroy projectile if we hit a physics
+	//if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)/* && OtherComp->IsSimulatingPhysics()*/)
+	//{
+	//	//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-		Destroy();
-	}
+	//	Destroy();
+	//}
 
-	if (Enemy != nullptr)
-	{
-		Destroy();
+	//if (Enemy != nullptr)
+	//{
+	//	Destroy();
 
-		Enemy->SetHealth(Enemy->GetHealth() - 1);
-		//when we spawn enemies + 1 to an int, when we kill -1 this int and then spawn the portal based off this
-	}
+	//	Enemy->SetHealth(Enemy->GetHealth() - 1);
+	//	//when we spawn enemies + 1 to an int, when we kill -1 this int and then spawn the portal based off this
+	//}
 }

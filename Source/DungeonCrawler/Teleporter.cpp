@@ -4,6 +4,7 @@
 #include "Teleporter.h"
 #include "DungeonCrawlerCharacter.h"
 #include "DungeonDFSGen.h"
+#include "MyGameInstance.h"
 
 // Sets default values
 ATeleporter::ATeleporter()
@@ -45,11 +46,24 @@ void ATeleporter::Tick( float DeltaTime )
 
 				if (MyActor != nullptr)
 				{
-					UGameplayStatics::OpenLevel(GetWorld(), "Dungeon1"); // Reload level so we can show the loading bar again
-					MyActor->CreateLevel();
-					int Theme = FMath::RandHelper(4);
-					UE_LOG(LogTemp, Warning, TEXT("theme that we are going to is %d"), Theme);
-					MyActor->SetLevelTheme(Theme);
+					UMyGameInstance *Instance = Cast<UMyGameInstance>(GetGameInstance());
+					if (Instance != nullptr)
+					{
+						if(Instance->GetLevelID() + 1 == 4)
+						{
+							// Load boss level
+							UGameplayStatics::OpenLevel(GetWorld(), "BossLevel");
+						}
+						else
+						{
+							UGameplayStatics::OpenLevel(GetWorld(), "Dungeon1"); // Reload level so we can show the loading bar again
+							MyActor->CreateLevel();
+							int Theme = FMath::RandHelper(4);
+							UE_LOG(LogTemp, Warning, TEXT("theme that we are going to is %d"), Theme);
+							MyActor->SetLevelTheme(Theme);
+							Instance->SetLevelID(Instance->GetLevelID() + 1);
+						}
+					}
 				}
 			}
 		}

@@ -33,6 +33,7 @@ AEnemyController::AEnemyController()
 	RoamLocation_Key = "RoamLocation";
 	EnemyState_Key = "EnemyState";
 	Player_Key = "Player";
+	Distance_Key = "Distance";
 }
 
 void AEnemyController::BeginPlay()
@@ -48,6 +49,7 @@ void AEnemyController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	Player = Cast<ADungeonCrawlerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	Enemy = Cast<AEnemyCharacter>(Blackboard->GetValueAsObject(SelfActor_Key)); // Set guard as selfactor from BB
 
 	switch (State)
 	{
@@ -69,22 +71,49 @@ void AEnemyController::Tick(float DeltaTime)
 			AttackTimer += DeltaTime;
 			float Distance = Player->GetDistanceTo(Enemy);
 
-			if (Distance <= 300.f && PlayerSpotted /*&& Enemy->AttackComponent->*/) // might want to change this based off who is attacking
+			if (PlayerSpotted)
 			{
-				if (AttackTimer >= 3.0f) // might want to change this based off who is attacking
+				if (Enemy->GetHealth() > 0)
 				{
-					AttackTimer = 0.0f;
-					IsAttacking = true;
-					//State = EAIState::ATTACK;
-					//Blackboard->SetValueAsEnum(EnemyState_Key, EAIState::ATTACK);
-					Enemy->EnemyAttack();
+					FRotator LookAtPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).Rotation();
+					LookAtPlayer.Pitch = 0.0f;
+					Enemy->SetActorRotation(LookAtPlayer);
+
+					if (AttackTimer >= 2.0f)
+					{
+						AttackTimer = 0.0f;
+						IsAttacking = true;
+						Enemy->EnemyAttack();
+					}
+
+					Enemy->EnemySummon();
 				}
 			}
-			else if (PlayerSpotted)
-			{
-				Enemy->EnemySummon();
-			}
-			//UE_LOG(LogTemp, Warning, TEXT("%f"), Distance);
+
+			//if (Distance <= 300.f && PlayerSpotted /*&& Enemy->t == 0*/) // might want to change this based off who is attacking
+			//{
+			//	if (AttackTimer >= 3.0f) // might want to change this based off who is attacking
+			//	{
+			//		AttackTimer = 0.0f;
+			//		IsAttacking = true;
+			//		//State = EAIState::ATTACK;
+			//		//Blackboard->SetValueAsEnum(EnemyState_Key, EAIState::ATTACK);
+			//		Enemy->EnemyAttack();
+			//	}
+			//}
+			//else if (Distance <= 600.f && PlayerSpotted && Enemy->t == 1)
+			//{
+			//	if (AttackTimer >= 3.0f) // might want to change this based off who is attacking
+			//	{
+			//		AttackTimer = 0.0f;
+
+			//		Enemy->EnemyRangeAttack();
+			//	}
+			//}
+			//else if (PlayerSpotted)
+			//{
+			//	Enemy->EnemySummon();
+			//}
 		}
 	}
 }
@@ -103,20 +132,24 @@ void AEnemyController::Roaming(float DeltaTime)
 
 	//float Distance = Enemy->GetActorLocation().Dist(Enemy->GetActorLocation(), Player->GetActorLocation());
 
-	if (FirstLocation == false)
+	if (Enemy != nullptr)
 	{
-		FirstLocation = true;
-		RoamLocation = NavSys->GetRandomReachablePointInRadius(GetWorld(), Enemy->GetActorLocation(), 50000.0f, NULL, NULL);
-		Blackboard->SetValueAsVector(RoamLocation_Key, RoamLocation);
-	}
-	else if (Enemy->GetActorLocation().Equals(RoamLocation, 100.0f)) // guard location equal to target location with tolerence
-	{
-		IdleCounter += DeltaTime;
-		if (IdleCounter >= 3.0f)
+		if (FirstLocation == false)
 		{
-			IdleCounter = 0.0f;
-			RoamLocation = NavSys->GetRandomReachablePointInRadius(GetWorld(), FVector(15000.0f, 15000.0f, Enemy->GetActorLocation().Z), 50000.0f, NULL, NULL);
+			FirstLocation = true;
+			RoamLocation = NavSys->GetRandomReachablePointInRadius(GetWorld(), Enemy->GetActorLocation(), 50000.0f, NULL, NULL);
 			Blackboard->SetValueAsVector(RoamLocation_Key, RoamLocation);
+		}
+		else if (Enemy->GetActorLocation().Equals(RoamLocation, 100.0f)) // guard location equal to target location with tolerence
+		{
+			IdleCounter += DeltaTime;
+
+			if (IdleCounter >= 3.0f)
+			{
+				IdleCounter = 0.0f;
+				RoamLocation = NavSys->GetRandomReachablePointInRadius(GetWorld(), FVector(15000.0f, 15000.0f, Enemy->GetActorLocation().Z), 50000.0f, NULL, NULL);
+				Blackboard->SetValueAsVector(RoamLocation_Key, RoamLocation);
+			}
 		}
 	}
 }
@@ -170,4 +203,12 @@ void AEnemyController::PerceptionSenseUpdate(TArray<AActor*> testActors)
 			//}
 		}
 	}
+}
+
+float AEnemyController::GetDistanceToPlayer()
+{
+	if (Player != nullptr && Enemy != nullptr)
+		return Player->GetDistanceTo(Enemy);
+	else
+		return 0;
 }

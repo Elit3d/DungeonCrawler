@@ -3,6 +3,8 @@
 #include "DungeonCrawler.h"
 #include "PlayerRaycastComponent.h"
 #include "Engine.h"
+#include "DungeonCrawlerCharacter.h"
+#include "MyGameInstance.h"
 
 // Sets default values for this component's properties
 UPlayerRaycastComponent::UPlayerRaycastComponent()
@@ -47,9 +49,26 @@ void UPlayerRaycastComponent::PlayerRaycast(FVector Start, FVector End, AActor *
 		//UE_LOG(LogTemp, Warning, TEXT("%s"), out.GetActor()->GetName());
 		if (GetWorld()->GetFirstPlayerController()->WasInputKeyJustPressed(EKeys::F))
 		{
-			if (out.GetActor()->ActorHasTag("Item"))
+			if (out.GetActor() != nullptr)
 			{
-				out.GetActor()->Destroy();
+				if (out.GetActor()->ActorHasTag("Health"))
+				{
+					UMyGameInstance* Instance = Cast<UMyGameInstance>(GetWorld()->GetGameInstance());
+
+					if (Instance != nullptr)
+					{
+						if (Instance->GetHealth() < 100)
+						{
+							Instance->SetHealth(Instance->GetHealth() + 5);
+						}
+					}
+				}
+				if (out.GetActor()->ActorHasTag("Ammo"))
+					UE_LOG(LogTemp, Warning, TEXT("Ammo Picked Up"));
+				if (out.GetActor()->ActorHasTag("Item"))
+				{
+					out.GetActor()->Destroy();
+				}
 			}
 		}
 	}

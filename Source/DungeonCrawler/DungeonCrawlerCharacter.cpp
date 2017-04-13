@@ -8,6 +8,8 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
 #include "PlayerRaycastComponent.h"
+#include "PlayerGunComponent.h"
+#include "MyGameInstance.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -80,6 +82,7 @@ ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
 	RaycastComponent = CreateDefaultSubobject<UPlayerRaycastComponent>(TEXT("RaycastComponent"));
+	GunComponent = CreateDefaultSubobject<UPlayerGunComponent>(TEXT("GunComponent"));
 }
 
 void ADungeonCrawlerCharacter::BeginPlay()
@@ -107,18 +110,22 @@ void ADungeonCrawlerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UMyGameInstance *Instance = Cast<UMyGameInstance>(GetGameInstance());
+	Health = Instance->GetHealth();
+
 	if (Health <= 0)
 	{
 		GetWorld()->GetFirstPlayerController()->RestartLevel();
+		Instance->SetHealth(100);
 	}
 
-	FVector DropLocation = GetCapsuleComponent()->GetForwardVector() + 30.0f;
+	//FVector DropLocation = GetCapsuleComponent()->GetForwardVector() + 30.0f;
 
-	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::Q))
-	{
-		AActor *Gun = GetWorld()->SpawnActor(CurrentGun, &DropLocation, NULL);
-		FP_Gun->SetHiddenInGame(true, true);
-	}
+	//if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::Q))
+	//{
+	//	AActor *Gun = GetWorld()->SpawnActor(CurrentGun, &DropLocation, NULL);
+	//	FP_Gun->SetHiddenInGame(true, true);
+	//}
 
 	RaycastComponent->PlayerRaycast(FirstPersonCameraComponent->GetComponentLocation(), FirstPersonCameraComponent->GetComponentLocation() + FirstPersonCameraComponent->GetForwardVector() * 300.0f, this);
 }
@@ -154,7 +161,7 @@ void ADungeonCrawlerCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ADungeonCrawlerCharacter::LookUpAtRate);
 }
 
-void ADungeonCrawlerCharacter::SetHealth(int _Health)
+void ADungeonCrawlerCharacter::SetHealth(float _Health)
 {
 	Health = _Health;
 }
@@ -167,28 +174,33 @@ void ADungeonCrawlerCharacter::DamagePlayer(int _Damage)
 void ADungeonCrawlerCharacter::OnFire()
 {
 	// try and fire a projectile
-	if (ProjectileClass != NULL)
-	{
-		UWorld* const World = GetWorld();
-		if (World != NULL)
-		{
-			if (bUsingMotionControllers)
-			{
-				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<ADungeonCrawlerProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-			}
-			else
-			{
-				const FRotator SpawnRotation = GetControlRotation();
-				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+	FVector StartRaycastPos = VR_MuzzleLocation->GetComponentLocation();
+	FVector EndRaycastPos = VR_MuzzleLocation->GetComponentLocation() + FirstPersonCameraComponent->GetForwardVector() * 3000.0f;
 
-				// spawn the projectile at the muzzle
-				World->SpawnActor<ADungeonCrawlerProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-			}
-		}
-	}
+	GunComponent->RaycastFire(StartRaycastPos, EndRaycastPos, this, "Enemy");
+
+	//if (ProjectileClass != NULL)
+	//{
+	//	UWorld* const World = GetWorld();
+	//	if (World != NULL)
+	//	{
+	//		if (bUsingMotionControllers)
+	//		{
+	//			const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+	//			const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+	//			World->SpawnActor<ADungeonCrawlerProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+	//		}
+	//		else
+	//		{
+	//			const FRotator SpawnRotation = GetControlRotation();
+	//			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+	//			const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+
+	//			// spawn the projectile at the muzzle
+	//			World->SpawnActor<ADungeonCrawlerProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+	//		}
+	//	}
+	//}
 
 	// try and play the sound if specified
 	if (FireSound != NULL)

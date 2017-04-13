@@ -53,7 +53,7 @@ public:
 	float BaseTurnRate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		int Health = 100;
+		float Health;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -80,9 +80,9 @@ public:
 	uint32 bUsingMotionControllers : 1;
 
 	UFUNCTION(BlueprintCallable, Category = "Player Health")
-		FORCEINLINE int GetHealth() { return Health; }
+		FORCEINLINE float GetHealth() { return Health; }
 	UFUNCTION(BlueprintCallable, Category = "Player Health")
-		void SetHealth(int _Health);
+		void SetHealth(float _Health);
 	UFUNCTION(BlueprintCallable, Category = "Player Health")
 		void DamagePlayer(int _Damage);
 protected:
@@ -147,5 +147,7 @@ public:
 		TSubclassOf<AActor> CurrentGun;
 
 	class UPlayerRaycastComponent *RaycastComponent;
+	UPROPERTY(BlueprintReadWrite)
+		class UPlayerGunComponent *GunComponent;
 };
 

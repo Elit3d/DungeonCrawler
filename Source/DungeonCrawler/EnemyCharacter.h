@@ -27,6 +27,7 @@ public:
 
 	void EnemyAttack();
 	void EnemySummon();
+	void EnemyRangeAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Health")
 		float GetHealth();
@@ -43,10 +44,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Summoning")
 		int MaxSummon = 0;
 	UPROPERTY(EditAnywhere, Category = "Summoning")
-	TSubclassOf<	AEnemyCharacter> ThisCharacter;
+		TSubclassOf<AEnemyCharacter> ThisCharacter;
+	UPROPERTY(EditAnywhere, Category = "Range Actor")
+		TSubclassOf<AActor> RangeProjectile;
 
 	float counter = 0;
 private:
 	class ADungeonCrawlerCharacter *Player;
 	TArray<AActor*> SummonedArray;
+	FVector EnemyLocation;
+	FRotator ForwardSpawn;
+	float CastTimer = 0.0f;
 };

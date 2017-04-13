@@ -43,6 +43,9 @@ public:
 		class UAIPerceptionComponent *AIPerception;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 		class UAISenseConfig_Sight *SightConfig;
+
+	UFUNCTION(BlueprintCallable, Category=Distance)
+		float GetDistanceToPlayer();
 private:
 	//Behavior Tree Components
 	class UBehaviorTree *BehaviorTree;
@@ -59,10 +62,12 @@ private:
 	FName RoamLocation_Key;
 	FName EnemyState_Key;
 	FName Player_Key;
+	FName Distance_Key;
 
 	float IdleCounter = 0.0f;
 	bool FirstLocation = false;
 	bool PlayerSpotted = false;
 
-	float AttackTimer = 0.0f;
+	float AttackTimer = 1.5f;
+	float Distance = 0.0f;
 };

@@ -26,5 +26,8 @@ public:
 		float GetHealth();
 	UFUNCTION(BlueprintCallable, Category = Health)
 		void SetHealth(float _health);
+
+	UPROPERTY(BlueprintReadWrite)
+		float LastHealth;
 private:
 };
