@@ -84,9 +84,11 @@ void AEnemyCharacter::EnemyAttack()
 void AEnemyCharacter::EnemySummon()
 {
 	// Handles summoning
-	if (counter >= 5.0f)
+
+	if (counter >= RandTimer)
 	{
 		HandleSummoning();
+		RandTimer = FMath::RandRange(3, 10);
 		counter = 0;
 	}
 }

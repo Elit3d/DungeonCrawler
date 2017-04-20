@@ -6,6 +6,9 @@
 
 #include "EnemyCharacter.h"
 
+#include "DungeonCrawlerCharacter.h"
+#include "MyGameInstance.h"
+
 ADungeonCrawlerProjectile::ADungeonCrawlerProjectile() 
 {
 	// Use a sphere as a simple collision representation
@@ -30,26 +33,45 @@ ADungeonCrawlerProjectile::ADungeonCrawlerProjectile()
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 
+	ExplodeParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ExplosionParticle"));
+	ExplodeParticle->bAutoActivate = true;
 	// Die after 3 seconds by default
 	//InitialLifeSpan = 3.0f;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ADungeonCrawlerProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	//Enemy = Cast<AEnemyCharacter>(OtherActor);
-	//// Only add impulse and destroy projectile if we hit a physics
-	//if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)/* && OtherComp->IsSimulatingPhysics()*/)
-	//{
-	//	//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+	Character = Cast<ADungeonCrawlerCharacter>(OtherActor);
 
-	//	Destroy();
-	//}
+	if (Character != nullptr)
+	{
+		UMyGameInstance *Instance = Cast<UMyGameInstance>(GetGameInstance());
+		
+		if (Instance != nullptr)
+		{
+			Instance->SetHealth(Instance->GetHealth() - 10);
+		}
 
-	//if (Enemy != nullptr)
-	//{
-	//	Destroy();
+		this->Destroy();
+	}
+}
 
-	//	Enemy->SetHealth(Enemy->GetHealth() - 1);
-	//	//when we spawn enemies + 1 to an int, when we kill -1 this int and then spawn the portal based off this
-	//}
+void ADungeonCrawlerProjectile::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("TICKING "));
+
+	counter += DeltaTime;
+
+	if (counter >= 3.0f)
+	{
+		// apply radial damage when explode
+		// also play attached sound
+		counter = 0.0f;
+		ExplodeParticle->SetHiddenInGame(false);
+		this->Destroy();
+	}
 }

@@ -69,7 +69,7 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 
 				if (ActorArray[4] != nullptr)
 				{
-					Chest = GetWorld()->SpawnActor(ActorArray[4], &RoomLocation, NULL);
+					Chest = GetWorld()->SpawnActor(ActorArray[4], &RoomLocation, &RandRotation);
 					ChestArray.Push(Chest);
 				}
 			}
@@ -118,7 +118,6 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 			if (Border[Testing[i].CurrentCell - 1] == false) // to fix walls not spawning on border
 				Testing[i].Direction[3] = true;
 		}
-
 	}
 
 	// Spawn player on first grid

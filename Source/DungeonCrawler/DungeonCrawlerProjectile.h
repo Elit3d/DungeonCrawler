@@ -10,12 +10,13 @@ class ADungeonCrawlerProjectile : public AActor
 
 	/** Sphere collision component */
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
-	class USphereComponent* CollisionComp;
+		class USphereComponent* CollisionComp;
 
 	/** Projectile movement component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	class UProjectileMovementComponent* ProjectileMovement;
-
+		class UProjectileMovementComponent* ProjectileMovement;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UParticleSystemComponent *ExplodeParticle;
 public:
 	ADungeonCrawlerProjectile();
 
@@ -28,7 +29,10 @@ public:
 	/** Returns ProjectileMovement subobject **/
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
+	virtual void Tick(float DeltaTime) override;
 private:
 	class AEnemyCharacter *Enemy;
+	class ADungeonCrawlerCharacter *Character;
+	float counter = 0.0f;
 };
 

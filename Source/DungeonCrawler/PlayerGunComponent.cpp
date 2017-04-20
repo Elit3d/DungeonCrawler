@@ -37,7 +37,7 @@ void UPlayerGunComponent::TickComponent( float DeltaTime, ELevelTick TickType, F
 
 bool UPlayerGunComponent::RaycastFire(FVector Start, FVector End, AActor *Ignore, FName Tag)
 {
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, true);
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, true);
 
 	FHitResult Out;
 	FCollisionQueryParams Param;

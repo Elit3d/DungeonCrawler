@@ -51,9 +51,6 @@ void AChestGeneration::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//AItemManager *ItemManager = Cast<AItemManager>(ItemList);
-	//ItemManager->TestFunc();
-
 	if (Collide)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Collided with chest"));
@@ -69,11 +66,15 @@ void AChestGeneration::Tick(float DeltaTime)
 		if (Open)
 		{
 			FRotator CurrentRot = ChestLid->GetComponentRotation();
-			FRotator TargetRot = FRotator(0.f, 0.f, -90.f);
-			FRotator ChestInterp = FMath::RInterpConstantTo(CurrentRot, TargetRot, DeltaTime, InterpSpeed);
-			ChestLid->SetWorldRotation(ChestInterp);
 
-			if (CurrentRot.Roll <= -89.f)
+			if (CurrentRot.Roll > -90.0f)
+			{
+				FRotator TargetRot = FRotator(CurrentRot.Pitch, CurrentRot.Yaw, CurrentRot.Roll - 90.0f);
+				FRotator ChestInterp = FMath::RInterpConstantTo(CurrentRot, TargetRot, DeltaTime, InterpSpeed);
+				ChestLid->SetWorldRotation(ChestInterp);
+			}
+
+			if (CurrentRot.Roll <= -89.f || CurrentRot.Yaw <= -89.f || CurrentRot.Pitch <= -89.f)
 			{
 				itemSpawnCounter++;
 				//Amount to spawn
@@ -88,25 +89,10 @@ void AChestGeneration::Tick(float DeltaTime)
 					SpawnRandomLocation.Z = SpawnArea->GetComponentLocation().Z;
 					AActor *Item = GetWorld()->SpawnActor<AActor>(ItemManager->ItemArray[randrange], SpawnRandomLocation, FRotator(0.f, 0.f, 0.f));
 					ItemActorArray.Push(Item);
-
-					/*if (Item != nullptr)
-					{
-						UProjectileMovementComponent *ThrowItem = Cast<UProjectileMovementComponent>(Item->GetComponentByClass(UProjectileMovementComponent::StaticClass()));
-						
-						if (ThrowItem != nullptr)
-						{
-							ThrowItem->Velocity.X += .1521f;
-							ThrowItem->Velocity.Y += .2f;
-						}
-
-					}*/
 				}
 			}
 		}
 	}
-	//spawn random item of random rarity with a velocity
-	//set velocity on spawned object z to 1.0 
-	//set velocity on spawned object xy to rand - NO MORE THAN .2
 }
 
 void AChestGeneration::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)

@@ -38,7 +38,7 @@ void UPlayerRaycastComponent::TickComponent( float DeltaTime, ELevelTick TickTyp
 
 void UPlayerRaycastComponent::PlayerRaycast(FVector Start, FVector End, AActor *Ignore)
 {
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red); // Debug line
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Red); // Debug line
 
 	FHitResult out;
 	FCollisionQueryParams Params;

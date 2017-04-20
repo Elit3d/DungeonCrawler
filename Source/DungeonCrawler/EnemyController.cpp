@@ -78,6 +78,8 @@ void AEnemyController::Tick(float DeltaTime)
 					FRotator LookAtPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).Rotation();
 					LookAtPlayer.Pitch = 0.0f;
 					Enemy->SetActorRotation(LookAtPlayer);
+					
+					float RandTimer = FMath::RandRange(1.5f, 3.5f);
 
 					if (AttackTimer >= 2.0f)
 					{

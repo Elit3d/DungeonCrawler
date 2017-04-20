@@ -55,4 +55,5 @@ private:
 	FVector EnemyLocation;
 	FRotator ForwardSpawn;
 	float CastTimer = 0.0f;
+	float RandTimer = FMath::RandRange(3, 10);
 };
