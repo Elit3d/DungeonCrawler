@@ -12,6 +12,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISense_Sight.h"
 
+#include "AIAttackComponent.h"
 #include "EnemyCharacter.h"
 #include "DungeonCrawlerCharacter.h"
 
@@ -69,6 +70,7 @@ void AEnemyController::Tick(float DeltaTime)
 		if (Enemy != nullptr)
 		{
 			AttackTimer += DeltaTime;
+			RangetAttackTimer += DeltaTime;
 			float Distance = Player->GetDistanceTo(Enemy);
 
 			if (PlayerSpotted)
@@ -88,34 +90,17 @@ void AEnemyController::Tick(float DeltaTime)
 						Enemy->EnemyAttack();
 					}
 
+					if (RangetAttackTimer >= RandRangeTimer)
+					{
+						RandRangeTimer = FMath::RandRange(4.5f, 6.5f);
+						RangetAttackTimer = 0.0f;
+						IsRangeAttacking = true;
+						Enemy->EnemyRangeAttack();
+					}
+
 					Enemy->EnemySummon();
 				}
 			}
-
-			//if (Distance <= 300.f && PlayerSpotted /*&& Enemy->t == 0*/) // might want to change this based off who is attacking
-			//{
-			//	if (AttackTimer >= 3.0f) // might want to change this based off who is attacking
-			//	{
-			//		AttackTimer = 0.0f;
-			//		IsAttacking = true;
-			//		//State = EAIState::ATTACK;
-			//		//Blackboard->SetValueAsEnum(EnemyState_Key, EAIState::ATTACK);
-			//		Enemy->EnemyAttack();
-			//	}
-			//}
-			//else if (Distance <= 600.f && PlayerSpotted && Enemy->t == 1)
-			//{
-			//	if (AttackTimer >= 3.0f) // might want to change this based off who is attacking
-			//	{
-			//		AttackTimer = 0.0f;
-
-			//		Enemy->EnemyRangeAttack();
-			//	}
-			//}
-			//else if (PlayerSpotted)
-			//{
-			//	Enemy->EnemySummon();
-			//}
 		}
 	}
 }
@@ -125,14 +110,6 @@ void AEnemyController::Roaming(float DeltaTime)
 	Enemy = Cast<AEnemyCharacter>(Blackboard->GetValueAsObject(SelfActor_Key)); // Set guard as selfactor from BB
 
 	UNavigationSystem* NavSys = UNavigationSystem::GetCurrent(GetWorld());
-
-	/*if (Enemy->GetActorLocation().Equals(SpawnLocation, 100.0f))
-	{
-		RoamLocation = NavSys->GetRandomReachablePointInRadius(GetWorld(), SpawnLocation, 200.0f, NULL, NULL);
-		Blackboard->SetValueAsVector(RoamLocation_Key, RoamLocation);
-	}*/
-
-	//float Distance = Enemy->GetActorLocation().Dist(Enemy->GetActorLocation(), Player->GetActorLocation());
 
 	if (Enemy != nullptr)
 	{
@@ -183,28 +160,12 @@ void AEnemyController::PerceptionSenseUpdate(TArray<AActor*> testActors)
 					BlackboardComp->SetValueAsObject(Player_Key, Player);
 				}
 			}
-			//else
-			//{
-			//	Guard = Cast<AGuardCharacter>(Info.Target);
-			//	Employee = Cast<AEmployeeCharacter>(Info.Target);
-			//	// Player out of sight
-			//	if (Info.Target == Guard || Info.Target == Employee)
-			//	{
-			//		// Does not set LastKnownLocation to guard or employee postition
-			//	}
-			//	else
-			//	{
-			//		// Sets its to player position
-			//		PlayerSpotted = false;
-			//		//DetectionCounter = 0.0f;
-			//		//StartDetectionCounter = false;
-			//		LastKnownLocation = Stimulus.StimulusLocation; // Set last known location
-			//		AIState = EAIState::SEARCH; // Change state
-			//		BlackboardComp->SetValueAsEnum(EnumKey_Key, EAIState::SEARCH); // Update state in BB
-			//	}
-			//}
 		}
 	}
+}
+
+void AEnemyController::BossAttack()
+{
 }
 
 float AEnemyController::GetDistanceToPlayer()

@@ -80,4 +80,14 @@ void UAIAttackComponent::SpawnProjectile()
 {
 }
 
+EAttackType UAIAttackComponent::GetAttackType()
+{
+	return CurrentAttack;
+}
+
+void UAIAttackComponent::SetAttackType(EAttackType AttackType)
+{
+	CurrentAttack = AttackType;
+}
+
 

@@ -62,7 +62,7 @@ void ADungeonCrawlerProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("TICKING "));
+	//UE_LOG(LogTemp, Warning, TEXT("TICKING "));
 
 	counter += DeltaTime;
 

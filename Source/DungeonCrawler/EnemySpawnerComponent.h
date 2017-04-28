@@ -21,7 +21,7 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
-	void SpawnEnemy(float X, float Y, float Z, float Radius);
+	void SpawnEnemy(FVector Location, float Radius);
 	
 	FVector SpawnLocation(float X, float Y, float Z, float Radius);
 

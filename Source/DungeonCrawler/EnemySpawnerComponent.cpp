@@ -34,12 +34,12 @@ void UEnemySpawnerComponent::TickComponent( float DeltaTime, ELevelTick TickType
 	// ...
 }
 
-void UEnemySpawnerComponent::SpawnEnemy(float X, float Y, float Z, float Radius)
+void UEnemySpawnerComponent::SpawnEnemy(FVector Location, float Radius)
 {
 	SpawnCounter++;
 	if (SpawnCounter <= MaxSpawn)
 	{
-		FVector EnemySpawnLocation = NavSystem->GetRandomReachablePointInRadius(GetWorld(), FVector(X, Y, Z), Radius, NULL, NULL);
+		FVector EnemySpawnLocation = NavSystem->GetRandomReachablePointInRadius(GetWorld(), Location, Radius, NULL, NULL);
 
 		RandNumber = FMath::RandHelper(5);
 

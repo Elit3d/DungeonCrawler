@@ -52,7 +52,7 @@ void ATeleporter::Tick( float DeltaTime )
 						if(Instance->GetLevelID() + 1 == 4)
 						{
 							// Load boss level
-							UGameplayStatics::OpenLevel(GetWorld(), "BossLevel");
+							UGameplayStatics::OpenLevel(GetWorld(), "Menu");
 						}
 						else
 						{

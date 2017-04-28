@@ -74,7 +74,9 @@ void ADungeonDFSGen::Tick(float DeltaTime)
 				}
 			}
 
-			EnemyComponent->SpawnEnemy(15000.0f, 15000.0f, 415.0f, 100000.0f);
+			FVector Location = FVector(15000.0f, 15000.0f, 415.0f);
+			float Radius = 100000.0f;
+			EnemyComponent->SpawnEnemy(Location, Radius);
 
 			AddWallsToGrid();
 
@@ -256,26 +258,26 @@ void ADungeonDFSGen::AddRoomToGrid()
 
 	if (RoomComponent->Rooms[RoomComponent->GetWeightedRandom()] != nullptr)
 	{
-		if (RoomComponent->GetTheme() < 4)
+		if (RoomComponent->GetTheme() < 3)
 		{
 			switch (RoomComponent->GetTheme())
 			{
 			case 0:
-				UE_LOG(LogTemp, Warning, TEXT("NORMAL THEME"));
+				//UE_LOG(LogTemp, Warning, TEXT("NORMAL THEME"));
 				Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
 				break;
 			case 1:
-				UE_LOG(LogTemp, Warning, TEXT("JUNGLE THEME"));
+				//UE_LOG(LogTemp, Warning, TEXT("JUNGLE THEME"));
 				Room = GetWorld()->SpawnActor(RoomComponent->JungleRooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
 				break;
 			case 2:
-				UE_LOG(LogTemp, Warning, TEXT("DESERT THEME"));
+				//UE_LOG(LogTemp, Warning, TEXT("DESERT THEME"));
 				Room = GetWorld()->SpawnActor(RoomComponent->SandRooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
 				break;
-			case 3:
-				UE_LOG(LogTemp, Warning, TEXT("HELL THEME"));
-				Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
-				break;
+			//case 3:
+			//	//UE_LOG(LogTemp, Warning, TEXT("HELL THEME"));
+			//	Room = GetWorld()->SpawnActor(RoomComponent->Rooms[RoomComponent->GetWeightedRandom()], &RoomLocation, &RandRotation);
+			//	break;
 			}
 			RoomArray.Push(Room);
 		}
@@ -329,30 +331,30 @@ void ADungeonDFSGen::WallProperties(int X, int Y)
 	WallLocation = FVector(GridLocation[CurrentWallCell].X + X, GridLocation[CurrentWallCell].Y + Y, GridLocation[CurrentWallCell].Z);
 	WallLocation.Z += 400;
 
-	if (RoomComponent->GetTheme() < 4)
+	if (RoomComponent->GetTheme() < 3)
 	{
 		switch (RoomComponent->GetTheme())
 		{
 		case 0:
-			UE_LOG(LogTemp, Warning, TEXT("NORMAL THEME"));
+			//UE_LOG(LogTemp, Warning, TEXT("NORMAL THEME"));
 			if (RoomComponent->Walls[0] != nullptr)
 				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[0], &WallLocation, NULL);
 			break;
 		case 1:
-			UE_LOG(LogTemp, Warning, TEXT("JUNGLE THEME"));
+			//UE_LOG(LogTemp, Warning, TEXT("JUNGLE THEME"));
 			if (RoomComponent->Walls[1] != nullptr)
 				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[1], &WallLocation, NULL);
 			break;
 		case 2:
-			UE_LOG(LogTemp, Warning, TEXT("DESERT THEME"));
+			//UE_LOG(LogTemp, Warning, TEXT("DESERT THEME"));
 			if (RoomComponent->Walls[2] != nullptr)
 				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[2], &WallLocation, NULL);
 			break;
-		case 3:
-			UE_LOG(LogTemp, Warning, TEXT("HELL THEME"));
-			if (RoomComponent->Walls[3] != nullptr)
-				Wall = GetWorld()->SpawnActor(RoomComponent->Walls[3], &WallLocation, NULL);
-			break;
+		//case 3:
+		//	//UE_LOG(LogTemp, Warning, TEXT("HELL THEME"));
+		//	if (RoomComponent->Walls[3] != nullptr)
+		//		Wall = GetWorld()->SpawnActor(RoomComponent->Walls[3], &WallLocation, NULL);
+		//	break;
 		}
 		WallArray.Push(Wall);
 	}
@@ -431,7 +433,7 @@ void ADungeonDFSGen::CreateLevel()
 	maxChestSpawn = FMath::RandRange(3, 5);
 
 	// Pick theme
-	int Theme = FMath::RandHelper(4);
+	int Theme = FMath::RandHelper(3);
 	SetLevelTheme(Theme);
 }
 

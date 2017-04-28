@@ -5,7 +5,6 @@
 
 #include "AIHealthComponent.h"
 #include "AIAttackComponent.h"
-
 #include "DungeonCrawlerCharacter.h"
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
@@ -58,18 +57,6 @@ void AEnemyCharacter::EnemyAttack()
 		}
 		break;
 	case EAttackType::AT_Range:
-			EnemyLocation = GetActorLocation();
-			ForwardSpawn = GetActorForwardVector().Rotation();
-
-			if (RangeProjectile != nullptr)
-				GetWorld()->SpawnActor(RangeProjectile, &EnemyLocation, &ForwardSpawn);
-
-		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
-		{
-			//HIT TAKE DAMAGE
-			//Spawn projectile (dont deal direct damage here)
-			//HealthComponent->SetHealth(HealthComponent->GetHealth() - 1); -- NOT THIS AS IT IS THE ENEMIES HEALTH AND NOT THE PLAYERS
-		}
 		break;
 	case EAttackType::AT_Magic:
 		//UE_LOG(LogTemp, Warning, TEXT("Attacking player...MAGIC"));
@@ -95,7 +82,27 @@ void AEnemyCharacter::EnemySummon()
 
 void AEnemyCharacter::EnemyRangeAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("FIRE BOMB"));
+	switch (AttackComponent->AttackType)
+	{
+	case EAttackType::AT_Melee:
+		break;
+	case EAttackType::AT_Range:
+		EnemyLocation = GetActorLocation();
+		ForwardSpawn = GetActorForwardVector().Rotation();
+
+		if (RangeProjectile != nullptr)
+			GetWorld()->SpawnActor(RangeProjectile, &EnemyLocation, &ForwardSpawn);
+
+		if (AttackComponent->RayCastAttack(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.0f, this, Player))
+		{
+			//HIT TAKE DAMAGE
+			//Spawn projectile (dont deal direct damage here)
+			//HealthComponent->SetHealth(HealthComponent->GetHealth() - 1); -- NOT THIS AS IT IS THE ENEMIES HEALTH AND NOT THE PLAYERS
+		}
+		break;
+	case EAttackType::AT_Magic:
+		break;
+	}
 }
 
 float AEnemyCharacter::GetHealth()

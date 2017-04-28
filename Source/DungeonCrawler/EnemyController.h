@@ -32,12 +32,16 @@ public:
 		TEnumAsByte<EAIState> State;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 		bool IsAttacking = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool IsRangeAttacking = false;
 
 	UFUNCTION()
-		void Roaming(float DeltaTime);
+		virtual void Roaming(float DeltaTime);
+	UFUNCTION()
+		virtual void PerceptionSenseUpdate(TArray<AActor*> testActors);
 
 	UFUNCTION()
-		void PerceptionSenseUpdate(TArray<AActor*> testActors);
+		void BossAttack();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 		class UAIPerceptionComponent *AIPerception;
@@ -69,5 +73,7 @@ private:
 	bool PlayerSpotted = false;
 
 	float AttackTimer = 1.5f;
+	float RangetAttackTimer = 0.0f;
+	float RandRangeTimer = FMath::RandRange(4.5f, 6.5f);
 	float Distance = 0.0f;
 };

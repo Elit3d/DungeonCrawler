@@ -10,7 +10,8 @@ enum class EAttackType : uint8
 {
 	AT_Melee 	UMETA(DisplayName = "Melee"),
 	AT_Range 	UMETA(DisplayName = "Range"),
-	AT_Magic	UMETA(DisplayName = "Magic")
+	AT_Magic	UMETA(DisplayName = "Magic"),
+	AT_Boss		UMETA(DisplayName = "Boss")
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -34,4 +35,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		EAttackType AttackType;
+
+	EAttackType GetAttackType();
+	void SetAttackType(EAttackType AttackType);
+
+private:
+	EAttackType CurrentAttack;
 };

@@ -39,6 +39,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Summoning")
 		bool bEnemyCanSummon = false;
+	UPROPERTY(EditAnywhere, Category = "Boss")
+		bool bIsBoss = false;
 	UPROPERTY(BlueprintReadWrite)
 		bool bSummonOtherEnemy = false;
 	UPROPERTY(EditAnywhere, Category = "Summoning")

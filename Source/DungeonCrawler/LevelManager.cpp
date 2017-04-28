@@ -25,19 +25,19 @@ void ALevelManager::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-	for (AActor *Actor : DungeonActor)
-	{
-		DFS_Gen = Cast<ADungeonDFSGen>(Actor);
+	//for (AActor *Actor : DungeonActor)
+	//{
+	//	DFS_Gen = Cast<ADungeonDFSGen>(Actor);
 
-		if (DFS_Gen != nullptr)
-		{
-			if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::E)) // check that all enemies are dead
-			{
-				int Theme = FMath::RandHelper(4); // 4 different themes to chose from
-				DFS_Gen->SetLevelTheme(Theme);
-				DFS_Gen->CreateLevel();
-			}
-		}
-	}
+	//	if (DFS_Gen != nullptr)
+	//	{
+	//		if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::E)) // check that all enemies are dead
+	//		{
+	//			int Theme = FMath::RandHelper(4); // 4 different themes to chose from
+	//			DFS_Gen->SetLevelTheme(Theme);
+	//			DFS_Gen->CreateLevel();
+	//		}
+	//	}
+	//}
 }
 
